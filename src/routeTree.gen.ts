@@ -16,8 +16,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppProjectsRouteImport } from './routes/app.projects'
 import { Route as AppPaymentsRouteImport } from './routes/app.payments'
@@ -27,6 +29,14 @@ import { Route as AppInvoicesRouteImport } from './routes/app.invoices'
 import { Route as AppIntegrationsRouteImport } from './routes/app.integrations'
 import { Route as AppClientsRouteImport } from './routes/app.clients'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
+import { Route as AdminVisitorsRouteImport } from './routes/admin.visitors'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminSourcesRouteImport } from './routes/admin.sources'
+import { Route as AdminSheetsRouteImport } from './routes/admin.sheets'
+import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
+import { Route as AdminFormsRouteImport } from './routes/admin.forms'
+import { Route as AdminContentRouteImport } from './routes/admin.content'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -63,6 +73,11 @@ const AppRoute = AppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -72,6 +87,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
@@ -118,9 +138,50 @@ const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AppRoute,
 } as any)
+const AdminVisitorsRoute = AdminVisitorsRouteImport.update({
+  id: '/visitors',
+  path: '/visitors',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSourcesRoute = AdminSourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSheetsRoute = AdminSheetsRouteImport.update({
+  id: '/sheets',
+  path: '/sheets',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFormsRoute = AdminFormsRouteImport.update({
+  id: '/forms',
+  path: '/forms',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminContentRoute = AdminContentRouteImport.update({
+  id: '/content',
+  path: '/content',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
@@ -128,6 +189,14 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/service': typeof ServiceRoute
   '/signup': typeof SignupRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/content': typeof AdminContentRoute
+  '/admin/forms': typeof AdminFormsRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/sheets': typeof AdminSheetsRoute
+  '/admin/sources': typeof AdminSourcesRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/visitors': typeof AdminVisitorsRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/clients': typeof AppClientsRoute
   '/app/integrations': typeof AppIntegrationsRoute
@@ -137,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/app/payments': typeof AppPaymentsRoute
   '/app/projects': typeof AppProjectsRoute
   '/app/settings': typeof AppSettingsRoute
+  '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
@@ -147,6 +217,14 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/service': typeof ServiceRoute
   '/signup': typeof SignupRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/content': typeof AdminContentRoute
+  '/admin/forms': typeof AdminFormsRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/sheets': typeof AdminSheetsRoute
+  '/admin/sources': typeof AdminSourcesRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/visitors': typeof AdminVisitorsRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/clients': typeof AppClientsRoute
   '/app/integrations': typeof AppIntegrationsRoute
@@ -156,11 +234,13 @@ export interface FileRoutesByTo {
   '/app/payments': typeof AppPaymentsRoute
   '/app/projects': typeof AppProjectsRoute
   '/app/settings': typeof AppSettingsRoute
+  '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
@@ -168,6 +248,14 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/service': typeof ServiceRoute
   '/signup': typeof SignupRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/content': typeof AdminContentRoute
+  '/admin/forms': typeof AdminFormsRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/sheets': typeof AdminSheetsRoute
+  '/admin/sources': typeof AdminSourcesRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/visitors': typeof AdminVisitorsRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/clients': typeof AppClientsRoute
   '/app/integrations': typeof AppIntegrationsRoute
@@ -177,12 +265,14 @@ export interface FileRoutesById {
   '/app/payments': typeof AppPaymentsRoute
   '/app/projects': typeof AppProjectsRoute
   '/app/settings': typeof AppSettingsRoute
+  '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/app'
     | '/contact'
     | '/faq'
@@ -190,6 +280,14 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/service'
     | '/signup'
+    | '/admin/audit'
+    | '/admin/content'
+    | '/admin/forms'
+    | '/admin/leads'
+    | '/admin/sheets'
+    | '/admin/sources'
+    | '/admin/users'
+    | '/admin/visitors'
     | '/app/analytics'
     | '/app/clients'
     | '/app/integrations'
@@ -199,6 +297,7 @@ export interface FileRouteTypes {
     | '/app/payments'
     | '/app/projects'
     | '/app/settings'
+    | '/admin/'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -209,6 +308,14 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/service'
     | '/signup'
+    | '/admin/audit'
+    | '/admin/content'
+    | '/admin/forms'
+    | '/admin/leads'
+    | '/admin/sheets'
+    | '/admin/sources'
+    | '/admin/users'
+    | '/admin/visitors'
     | '/app/analytics'
     | '/app/clients'
     | '/app/integrations'
@@ -218,10 +325,12 @@ export interface FileRouteTypes {
     | '/app/payments'
     | '/app/projects'
     | '/app/settings'
+    | '/admin'
     | '/app'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/app'
     | '/contact'
     | '/faq'
@@ -229,6 +338,14 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/service'
     | '/signup'
+    | '/admin/audit'
+    | '/admin/content'
+    | '/admin/forms'
+    | '/admin/leads'
+    | '/admin/sheets'
+    | '/admin/sources'
+    | '/admin/users'
+    | '/admin/visitors'
     | '/app/analytics'
     | '/app/clients'
     | '/app/integrations'
@@ -238,11 +355,13 @@ export interface FileRouteTypes {
     | '/app/payments'
     | '/app/projects'
     | '/app/settings'
+    | '/admin/'
     | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
@@ -303,6 +422,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -316,6 +442,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/app/settings': {
       id: '/app/settings'
@@ -380,8 +513,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAnalyticsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/admin/visitors': {
+      id: '/admin/visitors'
+      path: '/visitors'
+      fullPath: '/admin/visitors'
+      preLoaderRoute: typeof AdminVisitorsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sources': {
+      id: '/admin/sources'
+      path: '/sources'
+      fullPath: '/admin/sources'
+      preLoaderRoute: typeof AdminSourcesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sheets': {
+      id: '/admin/sheets'
+      path: '/sheets'
+      fullPath: '/admin/sheets'
+      preLoaderRoute: typeof AdminSheetsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/forms': {
+      id: '/admin/forms'
+      path: '/forms'
+      fullPath: '/admin/forms'
+      preLoaderRoute: typeof AdminFormsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/content': {
+      id: '/admin/content'
+      path: '/content'
+      fullPath: '/admin/content'
+      preLoaderRoute: typeof AdminContentRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminAuditRoute: typeof AdminAuditRoute
+  AdminContentRoute: typeof AdminContentRoute
+  AdminFormsRoute: typeof AdminFormsRoute
+  AdminLeadsRoute: typeof AdminLeadsRoute
+  AdminSheetsRoute: typeof AdminSheetsRoute
+  AdminSourcesRoute: typeof AdminSourcesRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminVisitorsRoute: typeof AdminVisitorsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAuditRoute: AdminAuditRoute,
+  AdminContentRoute: AdminContentRoute,
+  AdminFormsRoute: AdminFormsRoute,
+  AdminLeadsRoute: AdminLeadsRoute,
+  AdminSheetsRoute: AdminSheetsRoute,
+  AdminSourcesRoute: AdminSourcesRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminVisitorsRoute: AdminVisitorsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppRouteChildren {
   AppAnalyticsRoute: typeof AppAnalyticsRoute
@@ -413,6 +628,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   AppRoute: AppRouteWithChildren,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
