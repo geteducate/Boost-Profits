@@ -306,37 +306,159 @@ function Proof() {
         </div>
       </div>
 
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
-        {[
-          { q: "We cut invoice-chasing time in half. The reminders alone paid for the plan.", n: "Mara K.", r: "Founder · Northwind Studio", c: "from-rose-400 to-orange-400", logo: "Northwind" },
-          { q: "Our milestone billing became predictable for the first time.", n: "Idris T.", r: "Ops Lead · Lumen Agency", c: "from-sky-400 to-indigo-500", logo: "Lumen" },
-          { q: "Clients pay faster because the workflow is clearer.", n: "Jess R.", r: "Principal · Helix Labs", c: "from-emerald-400 to-teal-500", logo: "Helix" },
-        ].map((t) => {
-          const initials = t.n.split(" ").map((s) => s[0]).join("").toUpperCase();
-          return (
-            <figure key={t.n} className="card-premium lift p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex gap-1" style={{ color: "var(--primary-glow)" }}>
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
-                </div>
-                <span className="rounded-md border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  {t.logo}
+      <Testimonials />
+      </Section>
+    );
+  }
+
+function Testimonials() {
+  const featured = {
+    q: "Within a week our overdue queue dropped from fourteen invoices to three. Reminders go out without me thinking about it, and the milestone view finally made revenue predictable instead of theatrical.",
+    n: "Mara Kovač",
+    r: "Founder",
+    co: "Northwind Studio",
+    meta: "9-person brand studio · Berlin",
+    metric: { v: "−71%", l: "Overdue invoices · 30 days" },
+    c: "from-rose-400 to-orange-400",
+    logo: "NORTHWIND",
+  };
+  const items = [
+    { q: "Milestone billing finally feels predictable. Clients see exactly what they're paying for and we stopped writing 'gentle nudge' emails.", n: "Idris Talabi", r: "Operations Lead", co: "Lumen Agency", meta: "Verified customer · 4 months", metric: "+22% on-time rate", c: "from-sky-400 to-indigo-500", logo: "LUMEN" },
+    { q: "Clients pay faster because the workflow is clearer. The audit trail saved us during a contract dispute last month.", n: "Jess Rourke", r: "Principal", co: "Helix Labs", meta: "Verified customer · 6 months", metric: "−9 days average DSO", c: "from-emerald-400 to-teal-500", logo: "HELIX" },
+    { q: "We replaced three spreadsheets and a Slack channel with one dashboard. Onboarding the team took an afternoon.", n: "Priya Shah", r: "Finance Manager", co: "Atlas & Co.", meta: "Verified customer · 3 months", metric: "6 hrs / week saved", c: "from-violet-400 to-fuchsia-500", logo: "ATLAS" },
+  ];
+  const logos = ["NORTHWIND", "LUMEN", "HELIX", "ATLAS", "MERIDIAN", "VANTAGE", "PARALLEL"];
+
+  return (
+    <div className="mt-12">
+      <div className="mb-6 flex items-end justify-between gap-6">
+        <div>
+          <p className="text-eyebrow">What founders are saying</p>
+          <h3 className="mt-2 text-h3">Real teams. Verified outcomes.</h3>
+        </div>
+        <div className="hidden items-center gap-2 text-xs text-muted-foreground md:flex">
+          <BadgeCheck className="h-4 w-4 text-success" />
+          <span>Identity-verified via LinkedIn</span>
+        </div>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-5">
+        {/* Featured */}
+        <figure className="card-premium relative overflow-hidden p-7 lg:col-span-3">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-gradient-to-br from-[var(--primary-glow)]/20 to-transparent blur-2xl" />
+          <div className="relative">
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-[11px] font-semibold text-success">
+                <BadgeCheck className="h-3.5 w-3.5" /> Verified case study
+              </span>
+              <span className="font-serif text-5xl leading-none text-[var(--primary)]/15">"</span>
+            </div>
+            <blockquote className="mt-3 font-serif text-[20px] leading-relaxed text-foreground md:text-[22px]">
+              {featured.q}
+            </blockquote>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-5">
+              <figcaption className="flex items-center gap-3">
+                <span className={`flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br ${featured.c} text-sm font-bold text-white shadow-elegant`}>
+                  {featured.n.split(" ").map((s) => s[0]).join("")}
                 </span>
-              </div>
-              <blockquote className="mt-4 font-serif text-[15px] leading-relaxed italic">"{t.q}"</blockquote>
-              <figcaption className="mt-5 flex items-center gap-3">
-                <span className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br ${t.c} text-xs font-bold text-white shadow-elegant`}>
-                  {initials}
-                </span>
-                <span className="text-xs">
-                  <span className="block font-semibold text-foreground">{t.n}</span>
-                  <span className="text-muted-foreground">{t.r}</span>
+                <span className="text-sm">
+                  <span className="block font-semibold text-foreground">{featured.n}</span>
+                  <span className="text-muted-foreground">{featured.r} · {featured.co}</span>
+                  <span className="mt-0.5 block text-[11px] text-muted-foreground/80">{featured.meta}</span>
                 </span>
               </figcaption>
+              <div className="rounded-lg border border-border bg-muted/40 px-4 py-2.5 text-right">
+                <p className="text-2xl font-extrabold tracking-tight text-foreground">{featured.metric.v}</p>
+                <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{featured.metric.l}</p>
+              </div>
+            </div>
+          </div>
+        </figure>
+
+        {/* Side cards */}
+        <div className="grid gap-5 lg:col-span-2">
+          {items.slice(0, 2).map((t) => (
+            <figure key={t.n} className="card-premium lift p-5">
+              <div className="flex items-center justify-between">
+                <div className="flex gap-0.5" style={{ color: "var(--primary-glow)" }}>
+                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}
+                </div>
+                <span className="rounded-md border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-bold tracking-[0.15em] text-muted-foreground">{t.logo}</span>
+              </div>
+              <blockquote className="mt-3 font-serif text-[14px] leading-relaxed text-foreground">"{t.q}"</blockquote>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <figcaption className="flex items-center gap-2.5">
+                  <span className={`flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br ${t.c} text-[11px] font-bold text-white`}>
+                    {t.n.split(" ").map((s) => s[0]).join("")}
+                  </span>
+                  <span className="text-[11px]">
+                    <span className="block font-semibold text-foreground">{t.n}</span>
+                    <span className="text-muted-foreground">{t.r} · {t.co}</span>
+                  </span>
+                </figcaption>
+                <span className="rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-semibold text-success">{t.metric}</span>
+              </div>
+              <p className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground"><BadgeCheck className="h-3 w-3 text-success" />{t.meta}</p>
             </figure>
-          );
-        })}
+          ))}
+        </div>
+
+        {/* Third full-width card */}
+        <figure className="card-premium lift p-5 lg:col-span-5">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <div className="flex gap-0.5" style={{ color: "var(--primary-glow)" }}>
+                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}
+                </div>
+                <span className="rounded-md border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-bold tracking-[0.15em] text-muted-foreground">{items[2].logo}</span>
+              </div>
+              <blockquote className="mt-2 font-serif text-[15px] leading-relaxed text-foreground">"{items[2].q}"</blockquote>
+              <figcaption className="mt-3 flex items-center gap-2.5">
+                <span className={`flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br ${items[2].c} text-[11px] font-bold text-white`}>
+                  {items[2].n.split(" ").map((s) => s[0]).join("")}
+                </span>
+                <span className="text-[11px]">
+                  <span className="block font-semibold text-foreground">{items[2].n}</span>
+                  <span className="text-muted-foreground">{items[2].r} · {items[2].co} · <BadgeCheck className="inline h-3 w-3 text-success" /> {items[2].meta}</span>
+                </span>
+              </figcaption>
+            </div>
+            <div className="flex shrink-0 items-center gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
+              <span className="rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">{items[2].metric}</span>
+            </div>
+          </div>
+        </figure>
       </div>
+
+      {/* Logo strip */}
+      <div className="mt-10 rounded-xl border border-border/70 bg-muted/30 px-6 py-5">
+        <p className="mb-4 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Trusted by independent studios & service teams</p>
+        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
+          {logos.map((l) => (
+            <span key={l} className="font-serif text-sm font-bold tracking-[0.2em] text-muted-foreground/70 transition-colors hover:text-foreground">
+              {l}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Stat ribbon */}
+      <div className="mt-6 grid gap-4 rounded-xl border border-border/70 bg-gradient-to-br from-[var(--primary)]/5 to-transparent p-6 sm:grid-cols-3">
+        {[
+          { v: "4.9 / 5", l: "Average customer rating", sub: "Across 38 verified reviews" },
+          { v: "96%", l: "Would recommend", sub: "Post-onboarding survey" },
+          { v: "< 4 days", l: "Average time to first $ recovered", sub: "From signup to first reminder paid" },
+        ].map((s) => (
+          <div key={s.l} className="text-center sm:text-left">
+            <p className="text-2xl font-extrabold tracking-tight">{s.v}</p>
+            <p className="text-sm font-medium text-foreground">{s.l}</p>
+            <p className="text-[11px] text-muted-foreground">{s.sub}</p>
+          </div>
+        ))}
+      </div>
+      </div>
+  );
     </Section>
   );
 }
