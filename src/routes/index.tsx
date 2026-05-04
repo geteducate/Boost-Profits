@@ -64,15 +64,15 @@ function Hero() {
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-success" /> 14‑day trial</span>
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-success" /> Cancel anytime</span>
           </div>
-          <div className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-border bg-background/80 p-3 pr-5 shadow-card-soft backdrop-blur">
+          <div className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-border bg-background/80 p-3 pr-5 backdrop-blur" style={{ boxShadow: "var(--shadow-card)" }}>
             <div className="flex -space-x-2">
               {["#0f1b3d","#1e3a5f","#3b6fa0"].map((c) => (
                 <span key={c} className="h-7 w-7 rounded-full border-2 border-background" style={{ background: c }} />
               ))}
             </div>
             <div className="text-xs">
-              <p className="font-semibold">$1.4M+ recovered</p>
-              <p className="text-muted-foreground">across 1,200 agencies last quarter</p>
+              <p className="font-semibold">$48k+ recovered in beta</p>
+              <p className="text-muted-foreground">across 32 early agencies</p>
             </div>
           </div>
         </div>
@@ -90,7 +90,7 @@ function SocialProof() {
     <section className="border-y border-border bg-background py-10">
       <div className="container-page">
         <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Trusted by 1,200+ agencies & service teams
+          Onboarding the next 50 agencies & service teams
         </p>
         <div className="mt-6 grid grid-cols-2 items-center gap-x-10 gap-y-6 sm:grid-cols-4 lg:grid-cols-7">
           {logos.map((l) => (
@@ -229,10 +229,10 @@ function Proof() {
           <div className="flex items-end justify-between">
             <div>
               <p className="text-eyebrow">On-time payment rate</p>
-              <p className="mt-1 text-3xl font-extrabold tracking-tight">61% → 96%</p>
-              <p className="text-sm text-muted-foreground">After 90 days on Boost Profits</p>
+              <p className="mt-1 text-3xl font-extrabold tracking-tight">58% → 86%</p>
+              <p className="text-sm text-muted-foreground">After 60 days on Boost Profits</p>
             </div>
-            <span className="rounded-full bg-success/12 px-2.5 py-1 text-xs font-semibold text-success">+35 pts</span>
+            <span className="rounded-full bg-success/12 px-2.5 py-1 text-xs font-semibold text-success">+28 pts</span>
           </div>
           <div className="mt-6 flex h-44 items-end gap-2">
             {data.map((h, i) => (
@@ -245,9 +245,9 @@ function Proof() {
         </div>
         <div className="grid gap-4 lg:col-span-2">
           {[
-            { v: "$1.4M+", l: "Recovered for clients" },
-            { v: "11 hrs", l: "Saved per agency / week" },
-            { v: "−68%", l: "Reduction in overdue invoices" },
+            { v: "$48k+", l: "Recovered for early users" },
+            { v: "6 hrs", l: "Saved per agency / week" },
+            { v: "−42%", l: "Reduction in overdue invoices" },
           ].map((s) => (
             <div key={s.l} className="card-premium p-5">
               <p className="text-3xl font-extrabold tracking-tight">{s.v}</p>
