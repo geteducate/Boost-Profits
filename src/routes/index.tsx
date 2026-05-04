@@ -4,6 +4,7 @@ import { MarketingLayout } from "@/components/MarketingLayout";
 import { DashboardPreview } from "@/components/DashboardPreview";
 import { Section } from "@/components/Section";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
+import { RevenueSimulator } from "@/components/RevenueSimulator";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
