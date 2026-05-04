@@ -275,56 +275,126 @@ function LegendDot({ color, label }: { color: string; label: string }) {
 }
 
 function RecoveryChart({ current, improved, animate }: { current: number[]; improved: number[]; animate: boolean }) {
-  const w = 640, h = 240, pad = 24;
+  const w = 640, h = 240, padX = 28, padTop = 18, padBot = 30;
+  const innerH = h - padTop - padBot;
   const max = Math.max(...current, ...improved, 1);
   const n = current.length;
-  const slot = (w - pad * 2) / n;
-  const barW = Math.max(8, slot * 0.36);
   const labels = ["J","F","M","A","M","J","J","A","S","O","N","D"];
+  const xAt = (i: number) => padX + (i * (w - padX * 2)) / (n - 1);
+  const yAt = (v: number) => padTop + innerH - (v / max) * innerH;
+
+  // Smooth path via simple Catmull-Rom-ish curve
+  const toPath = (arr: number[]) => {
+    const pts = arr.map((v, i) => [xAt(i), yAt(v)] as const);
+    let d = `M ${pts[0][0]} ${pts[0][1]}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [x0, y0] = pts[i];
+      const [x1, y1] = pts[i + 1];
+      const cx = (x0 + x1) / 2;
+      d += ` C ${cx} ${y0}, ${cx} ${y1}, ${x1} ${y1}`;
+    }
+    return d;
+  };
+  const curPath = toPath(current);
+  const impPath = toPath(improved);
+  const areaPath = `${impPath} L ${xAt(n - 1)} ${yAt(0)} L ${xAt(0)} ${yAt(0)} Z`;
+  const gapArea = `${curPath} L ${xAt(n - 1)} ${padTop + innerH} L ${xAt(0)} ${padTop + innerH} Z`;
+
+  // "Paid" invoice markers along improved curve where it drops noticeably
+  const paidMarkers = improved
+    .map((v, i) => ({ i, drop: (current[i] - v) / max }))
+    .filter((m) => m.drop > 0.04 && m.i > 0);
+
   return (
     <div className="px-3 py-4">
       <svg viewBox={`0 0 ${w} ${h}`} className="block h-56 w-full" preserveAspectRatio="none">
         <defs>
-          <linearGradient id="rc-cur" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="oklch(0.82 0.03 260)" />
-            <stop offset="100%" stopColor="oklch(0.72 0.04 260)" />
+          <linearGradient id="rc-area" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="oklch(0.62 0.13 250 / 0.28)" />
+            <stop offset="100%" stopColor="oklch(0.62 0.13 250 / 0)" />
           </linearGradient>
-          <linearGradient id="rc-imp" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="oklch(0.62 0.13 250)" />
+          <linearGradient id="rc-cur-area" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="oklch(0.78 0.03 260 / 0.22)" />
+            <stop offset="100%" stopColor="oklch(0.78 0.03 260 / 0)" />
+          </linearGradient>
+          <linearGradient id="rc-imp-stroke" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="oklch(0.55 0.13 250)" />
             <stop offset="100%" stopColor="oklch(0.36 0.09 260)" />
           </linearGradient>
         </defs>
+
+        {/* gridlines + AR axis label */}
         {[0.25, 0.5, 0.75].map((g) => (
-          <line key={g} x1={pad} x2={w - pad} y1={h * g} y2={h * g} stroke="oklch(0.92 0.012 252)" strokeDasharray="3 4" />
+          <line key={g} x1={padX} x2={w - padX} y1={padTop + innerH * g} y2={padTop + innerH * g} stroke="oklch(0.92 0.012 252)" strokeDasharray="3 4" />
         ))}
-        {current.map((v, i) => {
-          const x = pad + i * slot + slot / 2;
-          const ch = ((v / max) * (h - pad * 2));
-          const ih = ((improved[i] / max) * (h - pad * 2));
+        <text x={padX} y={padTop - 6} fontSize="9" fill="oklch(0.5 0.025 258)" letterSpacing="1">OUTSTANDING A/R</text>
+
+        {/* current (no automation) — flat dashed area */}
+        <motion.path
+          d={gapArea}
+          fill="url(#rc-cur-area)"
+          initial={{ opacity: 0 }}
+          animate={animate ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.6 }}
+        />
+        <motion.path
+          d={curPath}
+          fill="none"
+          stroke="oklch(0.72 0.03 260)"
+          strokeWidth={1.5}
+          strokeDasharray="4 4"
+          initial={{ pathLength: 0 }}
+          animate={animate ? { pathLength: 1 } : { pathLength: 0 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        />
+
+        {/* improved area + line */}
+        <motion.path
+          d={areaPath}
+          fill="url(#rc-area)"
+          initial={{ opacity: 0 }}
+          animate={animate ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        />
+        <motion.path
+          d={impPath}
+          fill="none"
+          stroke="url(#rc-imp-stroke)"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          initial={{ pathLength: 0 }}
+          animate={animate ? { pathLength: 1 } : { pathLength: 0 }}
+          transition={{ duration: 1.2, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        />
+
+        {/* invoice "paid" markers — tiny receipt glyphs on the improved line */}
+        {paidMarkers.map(({ i }, k) => {
+          const x = xAt(i);
+          const y = yAt(improved[i]);
           return (
-            <g key={i}>
-              <motion.rect
-                x={x - barW - 1}
-                width={barW}
-                rx={3}
-                fill="url(#rc-cur)"
-                initial={{ y: h - pad, height: 0 }}
-                animate={animate ? { y: h - pad - ch, height: ch } : { y: h - pad, height: 0 }}
-                transition={{ duration: 0.7, delay: 0.05 * i, ease: [0.22, 1, 0.36, 1] }}
-              />
-              <motion.rect
-                x={x + 1}
-                width={barW}
-                rx={3}
-                fill="url(#rc-imp)"
-                initial={{ y: h - pad, height: 0 }}
-                animate={animate ? { y: h - pad - ih, height: ih } : { y: h - pad, height: 0 }}
-                transition={{ duration: 0.7, delay: 0.05 * i + 0.08, ease: [0.22, 1, 0.36, 1] }}
-              />
-              <text x={x} y={h - 6} textAnchor="middle" fontSize="10" fill="oklch(0.5 0.025 258)">{labels[i]}</text>
-            </g>
+            <motion.g
+              key={i}
+              initial={{ opacity: 0, scale: 0.4 }}
+              animate={animate ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.4 }}
+              transition={{ duration: 0.35, delay: 0.6 + k * 0.06, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformOrigin: `${x}px ${y}px` }}
+            >
+              <circle cx={x} cy={y} r={6} fill="oklch(0.98 0.005 252)" stroke="oklch(0.55 0.13 250)" strokeWidth={1.5} />
+              <path d={`M ${x - 2.2} ${y - 0.6} L ${x - 0.4} ${y + 1.4} L ${x + 2.6} ${y - 1.8}`} stroke="oklch(0.55 0.13 250)" strokeWidth={1.4} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            </motion.g>
           );
         })}
+
+        {/* x-axis labels */}
+        {labels.map((l, i) => (
+          <text key={i} x={xAt(i)} y={h - 12} textAnchor="middle" fontSize="10" fill="oklch(0.5 0.025 258)">{l}</text>
+        ))}
+
+        {/* end-of-line callouts */}
+        <g>
+          <circle cx={xAt(n - 1)} cy={yAt(current[n - 1])} r={3} fill="oklch(0.72 0.03 260)" />
+          <circle cx={xAt(n - 1)} cy={yAt(improved[n - 1])} r={3.5} fill="oklch(0.36 0.09 260)" />
+        </g>
       </svg>
     </div>
   );
