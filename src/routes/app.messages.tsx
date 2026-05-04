@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, StatusPill } from "@/components/AppShell";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Mail, MessageCircle, Plus } from "lucide-react";
 
@@ -23,7 +24,7 @@ function MessagesPage() {
     <AppShell
       title="Reminders & messages"
       subtitle="Polite, branded follow-ups that send themselves."
-      actions={<Button className="bg-cta text-primary-foreground"><Plus className="mr-1.5 h-4 w-4" />New template</Button>}
+      actions={<Button onClick={() => toast.success("New template created")} className="bg-cta text-primary-foreground"><Plus className="mr-1.5 h-4 w-4" />New template</Button>}
     >
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="card-premium p-6 lg:col-span-2">

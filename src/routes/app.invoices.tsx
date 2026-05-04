@@ -24,7 +24,7 @@ function InvoicesPage() {
     <AppShell
       title="Invoices"
       subtitle="Send, resend and track every invoice."
-      actions={<Button className="bg-cta text-primary-foreground"><Plus className="mr-1.5 h-4 w-4" />New invoice</Button>}
+      actions={<Button onClick={() => toast.success("New invoice draft created")} className="bg-cta text-primary-foreground"><Plus className="mr-1.5 h-4 w-4" />New invoice</Button>}
     >
       <div className="card-premium overflow-x-auto">
         <table className="w-full min-w-[820px] text-sm">
