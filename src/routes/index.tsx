@@ -3,10 +3,6 @@ import { ArrowRight, BadgeCheck, BarChart3, Bell, Building2, CheckCircle2, Clipb
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { DashboardPreview } from "@/components/DashboardPreview";
 import { Section } from "@/components/Section";
-import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
-import { RevenueSimulator } from "@/components/RevenueSimulator";
-import { SnapScroller, SnapSectionWrap } from "@/components/SnapScroller";
-import { SiteFooter } from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -21,44 +17,19 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const SECTIONS = [
-  { id: "hero", label: "Overview" },
-  { id: "proof-strip", label: "Trusted by" },
-  { id: "problem", label: "The problem" },
-  { id: "how", label: "How it works" },
-  { id: "features", label: "Features" },
-  { id: "simulator", label: "Simulator" },
-  { id: "proof", label: "Proof" },
-  { id: "trust", label: "Trust & security" },
-  { id: "pricing", label: "Pricing" },
-  { id: "faq", label: "FAQ" },
-  { id: "cta", label: "Get started" },
-  { id: "footer", label: "Footer" },
-];
-
 function HomePage() {
   return (
-    <MarketingLayout hideFooter>
-      <SnapScroller sections={SECTIONS}>
-        <SnapSectionWrap id="hero"><Hero /></SnapSectionWrap>
-        <SnapSectionWrap id="proof-strip"><SocialProof /></SnapSectionWrap>
-        <SnapSectionWrap id="problem"><Problem /></SnapSectionWrap>
-        <SnapSectionWrap id="how"><HowItWorks /></SnapSectionWrap>
-        <SnapSectionWrap id="features"><Features /></SnapSectionWrap>
-        <SnapSectionWrap id="simulator"><RevenueSimulator /></SnapSectionWrap>
-        <SnapSectionWrap id="proof"><Proof /></SnapSectionWrap>
-        <SnapSectionWrap id="trust"><Trust /></SnapSectionWrap>
-        <SnapSectionWrap id="pricing"><Pricing compact /></SnapSectionWrap>
-        <SnapSectionWrap id="faq"><FAQ /></SnapSectionWrap>
-        <SnapSectionWrap id="cta"><FinalCTA /></SnapSectionWrap>
-        <section
-          id="snap-footer"
-          data-snap-id="footer"
-          className="relative w-full snap-start snap-always"
-        >
-          <SiteFooter />
-        </section>
-      </SnapScroller>
+    <MarketingLayout>
+      <Hero />
+      <SocialProof />
+      <Problem />
+      <HowItWorks />
+      <Features />
+      <Proof />
+      <Trust />
+      <Pricing compact />
+      <FAQ />
+      <FinalCTA />
     </MarketingLayout>
   );
 }
@@ -335,101 +306,38 @@ function Proof() {
         </div>
       </div>
 
-      <Testimonials />
+      <div className="mt-10 grid gap-4 md:grid-cols-3">
+        {[
+          { q: "We cut invoice-chasing time in half. The reminders alone paid for the plan.", n: "Mara K.", r: "Founder · Northwind Studio", c: "from-rose-400 to-orange-400", logo: "Northwind" },
+          { q: "Our milestone billing became predictable for the first time.", n: "Idris T.", r: "Ops Lead · Lumen Agency", c: "from-sky-400 to-indigo-500", logo: "Lumen" },
+          { q: "Clients pay faster because the workflow is clearer.", n: "Jess R.", r: "Principal · Helix Labs", c: "from-emerald-400 to-teal-500", logo: "Helix" },
+        ].map((t) => {
+          const initials = t.n.split(" ").map((s) => s[0]).join("").toUpperCase();
+          return (
+            <figure key={t.n} className="card-premium lift p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex gap-1" style={{ color: "var(--primary-glow)" }}>
+                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
+                </div>
+                <span className="rounded-md border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  {t.logo}
+                </span>
+              </div>
+              <blockquote className="mt-4 font-serif text-[15px] leading-relaxed italic">"{t.q}"</blockquote>
+              <figcaption className="mt-5 flex items-center gap-3">
+                <span className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br ${t.c} text-xs font-bold text-white shadow-elegant`}>
+                  {initials}
+                </span>
+                <span className="text-xs">
+                  <span className="block font-semibold text-foreground">{t.n}</span>
+                  <span className="text-muted-foreground">{t.r}</span>
+                </span>
+              </figcaption>
+            </figure>
+          );
+        })}
+      </div>
     </Section>
-  );
-}
-
-function Testimonials() {
-  const items = [
-    {
-      q: "Within three weeks, two clients who used to drift 30+ days past due were paying inside a week. The reminders feel personal, not robotic — and the milestone gates mean nothing ships before it's invoiced.",
-      n: "Mara Kowalski",
-      r: "Founder & Creative Director",
-      org: "Northwind Studio",
-      sector: "Brand & Web · 11 people",
-      metric: { v: "−63%", l: "days-sales-outstanding" },
-      logo: "NORTHWIND",
-      img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=facearea&facepad=3&w=160&h=160&q=80",
-    },
-    {
-      q: "Milestone billing finally feels predictable. We forecast cash a month out instead of guessing.",
-      n: "Idris Tariq",
-      r: "Operations Lead",
-      org: "Lumen Agency",
-      sector: "Performance Marketing · 24 people",
-      metric: { v: "$11.4k", l: "recovered in month one" },
-      logo: "LUMEN",
-      img: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=facearea&facepad=3&w=160&h=160&q=80",
-    },
-    {
-      q: "Clients pay faster because the workflow is clearer to them — not because we nag harder.",
-      n: "Jess Romero",
-      r: "Principal",
-      org: "Helix Labs",
-      sector: "Product Design · 6 people",
-      metric: { v: "8.2 days", l: "average time-to-pay" },
-      logo: "HELIX",
-      img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=facearea&facepad=3&w=160&h=160&q=80",
-    },
-    {
-      q: "Setup took an afternoon. The audit log alone replaced two spreadsheets and a weekly check-in.",
-      n: "Priya Shah",
-      r: "Finance Manager",
-      org: "Atlas Collective",
-      sector: "Consulting · 18 people",
-      metric: { v: "6 hrs", l: "saved per week" },
-      logo: "ATLAS",
-      img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=facearea&facepad=3&w=160&h=160&q=80",
-    },
-    {
-      q: "The branded reminders did what I never could — keep things polite while still firm. Cash conversion jumped quietly.",
-      n: "Daniel Brooks",
-      r: "Managing Partner",
-      org: "Meridian Co.",
-      sector: "Strategy · 9 people",
-      metric: { v: "+22%", l: "month-over-month cash" },
-      logo: "MERIDIAN",
-      img: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=facearea&facepad=3&w=160&h=160&q=80",
-    },
-  ];
-
-  return (
-    <div className="mt-14">
-      <div className="mb-6 flex items-end justify-between gap-4">
-        <div>
-          <p className="text-eyebrow">In their words</p>
-          <h3 className="mt-2 text-h3">Operators who stopped chasing money.</h3>
-        </div>
-        <div className="hidden items-center gap-2 md:flex">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-3 py-1 text-[11px] font-semibold text-muted-foreground">
-            <BadgeCheck className="h-3.5 w-3.5 text-success" /> Verified customers
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-3 py-1 text-[11px] font-semibold text-muted-foreground">
-            <Star className="h-3.5 w-3.5 fill-current" style={{ color: "var(--primary-glow)" }} /> 4.9 average
-          </span>
-        </div>
-      </div>
-
-      <TestimonialsCarousel items={items} />
-
-      {/* Trust strip */}
-      <div className="mt-8 rounded-xl border border-border/70 bg-background/60 px-6 py-5 backdrop-blur-sm">
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70">
-          <span>Northwind</span>
-          <span className="hidden h-3 w-px bg-border md:block" />
-          <span>Lumen</span>
-          <span className="hidden h-3 w-px bg-border md:block" />
-          <span>Helix Labs</span>
-          <span className="hidden h-3 w-px bg-border md:block" />
-          <span>Atlas Collective</span>
-          <span className="hidden h-3 w-px bg-border md:block" />
-          <span>Meridian Co.</span>
-          <span className="hidden h-3 w-px bg-border md:block" />
-          <span>Forge & Form</span>
-        </div>
-      </div>
-    </div>
   );
 }
 
