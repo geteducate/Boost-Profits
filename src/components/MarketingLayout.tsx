@@ -3,6 +3,7 @@ import { useRouterState } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
+import { CursorHalo } from "./CursorHalo";
 import { trackPageView } from "@/lib/tracking";
 
 export function MarketingLayout({ children }: { children: React.ReactNode }) {
