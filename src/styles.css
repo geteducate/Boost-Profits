@@ -62,11 +62,11 @@
 :root {
   --radius: 0.875rem;
 
-  /* Navy Trust palette */
-  --background: oklch(1 0 0);
+  /* Navy Trust palette — premium blue */
+  --background: oklch(0.975 0.012 252);
   --foreground: oklch(0.18 0.04 260);
-  --surface: oklch(0.98 0.01 250);
-  --surface-muted: oklch(0.965 0.012 250);
+  --surface: oklch(0.955 0.018 252);
+  --surface-muted: oklch(0.94 0.022 252);
 
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.18 0.04 260);
