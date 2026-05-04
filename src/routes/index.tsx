@@ -5,6 +5,7 @@ import { DashboardPreview } from "@/components/DashboardPreview";
 import { Section } from "@/components/Section";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { RevenueSimulator } from "@/components/RevenueSimulator";
+import { SnapScroller, SnapSectionWrap } from "@/components/SnapScroller";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -19,20 +20,36 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
+const SECTIONS = [
+  { id: "hero", label: "Overview" },
+  { id: "proof-strip", label: "Trusted by" },
+  { id: "problem", label: "The problem" },
+  { id: "how", label: "How it works" },
+  { id: "features", label: "Features" },
+  { id: "simulator", label: "Simulator" },
+  { id: "proof", label: "Proof" },
+  { id: "trust", label: "Trust & security" },
+  { id: "pricing", label: "Pricing" },
+  { id: "faq", label: "FAQ" },
+  { id: "cta", label: "Get started" },
+];
+
 function HomePage() {
   return (
-    <MarketingLayout>
-      <Hero />
-      <SocialProof />
-      <Problem />
-      <HowItWorks />
-      <Features />
-      <RevenueSimulator />
-      <Proof />
-      <Trust />
-      <Pricing compact />
-      <FAQ />
-      <FinalCTA />
+    <MarketingLayout hideFooter>
+      <SnapScroller sections={SECTIONS}>
+        <SnapSectionWrap id="hero"><Hero /></SnapSectionWrap>
+        <SnapSectionWrap id="proof-strip"><SocialProof /></SnapSectionWrap>
+        <SnapSectionWrap id="problem"><Problem /></SnapSectionWrap>
+        <SnapSectionWrap id="how"><HowItWorks /></SnapSectionWrap>
+        <SnapSectionWrap id="features"><Features /></SnapSectionWrap>
+        <SnapSectionWrap id="simulator"><RevenueSimulator /></SnapSectionWrap>
+        <SnapSectionWrap id="proof"><Proof /></SnapSectionWrap>
+        <SnapSectionWrap id="trust"><Trust /></SnapSectionWrap>
+        <SnapSectionWrap id="pricing"><Pricing compact /></SnapSectionWrap>
+        <SnapSectionWrap id="faq"><FAQ /></SnapSectionWrap>
+        <SnapSectionWrap id="cta"><FinalCTA /></SnapSectionWrap>
+      </SnapScroller>
     </MarketingLayout>
   );
 }
