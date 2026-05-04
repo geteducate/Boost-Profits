@@ -33,6 +33,7 @@ const SECTIONS = [
   { id: "pricing", label: "Pricing" },
   { id: "faq", label: "FAQ" },
   { id: "cta", label: "Get started" },
+  { id: "footer", label: "Footer" },
 ];
 
 function HomePage() {
@@ -50,6 +51,13 @@ function HomePage() {
         <SnapSectionWrap id="pricing"><Pricing compact /></SnapSectionWrap>
         <SnapSectionWrap id="faq"><FAQ /></SnapSectionWrap>
         <SnapSectionWrap id="cta"><FinalCTA /></SnapSectionWrap>
+        <section
+          id="snap-footer"
+          data-snap-id="footer"
+          className="relative w-full snap-start snap-always"
+        >
+          <SiteFooter />
+        </section>
       </SnapScroller>
     </MarketingLayout>
   );
