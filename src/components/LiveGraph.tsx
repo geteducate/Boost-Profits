@@ -20,7 +20,7 @@ export function LiveGraph() {
   });
   const [today, setToday] = useState(0);
   const [pulse, setPulse] = useState(0);
-  const tRef = useRef<number>();
+  const tRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const tick = () => {
