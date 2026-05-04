@@ -6,6 +6,7 @@ import { Section } from "@/components/Section";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { RevenueSimulator } from "@/components/RevenueSimulator";
 import { SnapScroller, SnapSectionWrap } from "@/components/SnapScroller";
+import { SiteFooter } from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
