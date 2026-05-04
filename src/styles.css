@@ -24,6 +24,8 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-glow: var(--primary-glow);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -117,6 +119,7 @@
   --shadow-elegant: 0 1px 2px rgb(15 27 61 / 0.04), 0 8px 24px -10px rgb(15 27 61 / 0.12);
   --shadow-glow: 0 20px 60px -20px color-mix(in oklab, var(--primary-glow) 45%, transparent);
   --shadow-card: 0 1px 3px rgb(15 27 61 / 0.05), 0 4px 16px -8px rgb(15 27 61 / 0.08);
+  --shadow-card-strong: 0 2px 6px rgb(15 27 61 / 0.05), 0 18px 40px -20px rgb(15 27 61 / 0.18);
 }
 
 .dark {
@@ -178,14 +181,21 @@
   .gradient-text { background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .surface-soft { background-color: var(--surface); }
   .surface-mute { background-color: var(--surface-muted); }
+  .surface-panel { background-color: color-mix(in oklab, var(--background) 88%, var(--surface) 12%); @apply border border-border/80 backdrop-blur-xl; box-shadow: var(--shadow-card); }
+  .premium-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--border) 72%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--border) 72%, transparent) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
   .shadow-elegant { box-shadow: var(--shadow-elegant); }
   .shadow-card-soft { box-shadow: var(--shadow-card); }
   .shadow-glow { box-shadow: var(--shadow-glow); }
   .bg-hero { background-image: var(--gradient-hero); }
   .bg-cta { background-image: var(--gradient-cta); }
   .ring-focus { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background; }
-  .card-premium { @apply rounded-2xl border bg-card; box-shadow: var(--shadow-card); }
-  .lift { @apply transition-all duration-300 hover:-translate-y-0.5; }
+  .card-premium { @apply rounded-lg border border-border/80 bg-card/95 backdrop-blur-xl; box-shadow: var(--shadow-card); }
+  .lift { @apply transition-all duration-300 hover:-translate-y-1; }
   .lift:hover { box-shadow: var(--shadow-elegant); }
   .fade-up { animation: fadeUp 0.6s ease-out both; }
   .scale-in { animation: scaleIn 0.4s ease-out both; }

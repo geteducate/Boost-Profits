@@ -19,9 +19,15 @@ function FaqPage() {
   return (
     <MarketingLayout>
       <section className="bg-hero">
-        <div className="container-page py-20 text-center md:py-24">
-          <p className="text-eyebrow">FAQ</p>
-          <h1 className="text-display mt-4">Questions, answered.</h1>
+        <div className="container-page grid gap-8 py-20 md:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+          <div className="text-center lg:text-left">
+            <p className="text-eyebrow">FAQ</p>
+            <h1 className="text-display mt-4">Questions, answered.</h1>
+          </div>
+          <div className="surface-panel rounded-lg p-6">
+            <p className="text-eyebrow">Before you commit</p>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">Everything here is written to remove buying friction: security, billing, onboarding, integrations and what actually happens after signup.</p>
+          </div>
         </div>
       </section>
       <Section>

@@ -90,7 +90,7 @@ function SocialProof() {
     <section className="border-y border-border bg-background py-10">
       <div className="container-page">
         <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Onboarding the next 50 agencies & service teams
+          Trusted by the next wave of agencies & service teams
         </p>
         <div className="mt-6 grid grid-cols-2 items-center gap-x-10 gap-y-6 sm:grid-cols-4 lg:grid-cols-7">
           {logos.map((l) => (
@@ -115,9 +115,28 @@ function Problem() {
     <Section
       eyebrow="The problem"
       title="How agencies stop chasing payments."
-      description="Service businesses lose 9% of revenue to late, missed and untracked invoices. We fix the four places it leaks."
+      description="Late approvals, awkward follow-ups and scattered billing workflows quietly drag down cash flow. Boost Profits turns that mess into a controlled revenue system."
     >
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-5 lg:grid-cols-[1.1fr_1.9fr]">
+        <div className="surface-panel rounded-lg p-7 premium-grid">
+          <p className="text-eyebrow">Revenue leakage map</p>
+          <h3 className="mt-3 text-h3">Four friction points slow down otherwise great teams.</h3>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">From sign-off to reminder cadence, every weak handoff delays cash. The platform closes those gaps with structure, visibility and timing.</p>
+          <div className="mt-6 space-y-3">
+            {[
+              "Approvals move from inbox chaos to tracked milestones",
+              "Invoices trigger as work is approved, not days later",
+              "Branded reminders protect relationships while staying firm",
+              "Margin risk becomes visible before it hurts the month",
+            ].map((point) => (
+              <div key={point} className="flex items-start gap-3 rounded-lg border border-border/70 bg-background/72 px-4 py-3">
+                <span className="mt-0.5 h-2.5 w-2.5 rounded-full bg-primary" />
+                <p className="text-sm text-muted-foreground">{point}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
         {items.map((it) => (
           <div key={it.title} className="card-premium lift p-6">
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/8 text-primary">
@@ -127,6 +146,7 @@ function Problem() {
             <p className="mt-2 text-sm text-muted-foreground">{it.desc}</p>
           </div>
         ))}
+        </div>
       </div>
     </Section>
   );
@@ -141,15 +161,22 @@ function HowItWorks() {
     { n: "05", t: "Track everything", d: "See recovery, status and forecast in one dashboard." },
   ];
   return (
-    <Section tone="muted" eyebrow="How it works" title="From kickoff to paid in five clean steps.">
-      <div className="grid gap-4 md:grid-cols-5">
-        {steps.map((s, i) => (
-          <div key={s.n} className="card-premium p-6 fade-up" style={{ animationDelay: `${i * 80}ms` }}>
-            <p className="text-xs font-bold tracking-widest text-primary-glow" style={{ color: "var(--primary-glow)" }}>{s.n}</p>
-            <h3 className="mt-3 text-base font-bold">{s.t}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{s.d}</p>
-          </div>
-        ))}
+    <Section tone="muted" eyebrow="How it works" title="From kickoff to paid in five clean steps." description="A premium workflow for teams that want tighter handoffs, faster invoices and zero chasing.">
+      <div className="grid gap-4 lg:grid-cols-[0.95fr_2.05fr]">
+        <div className="surface-panel rounded-lg p-7">
+          <p className="text-eyebrow">Operational rhythm</p>
+          <h3 className="mt-3 text-h3">Structured enough for finance. Calm enough for clients.</h3>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">Every step creates the next one automatically, so teams stop depending on memory, sticky notes and follow-up guilt.</p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-5">
+          {steps.map((s, i) => (
+            <div key={s.n} className="card-premium p-6 fade-up" style={{ animationDelay: `${i * 80}ms` }}>
+              <p className="text-xs font-bold tracking-widest text-primary-glow" style={{ color: "var(--primary-glow)" }}>{s.n}</p>
+              <h3 className="mt-3 text-base font-bold">{s.t}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{s.d}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </Section>
   );
@@ -195,7 +222,29 @@ function Features() {
     },
   ];
   return (
-    <Section eyebrow="Features" title="Everything you need. Nothing you don’t.">
+    <Section eyebrow="Features" title="Everything you need. Nothing you don’t." description="Designed like a real revenue operating system — compact, credible and premium in the details.">
+      <div className="mb-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="surface-panel rounded-lg p-7">
+          <p className="text-eyebrow">What makes it feel premium</p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+            {[
+              ["Fast setup", "Teams can move from invite to first milestone in minutes."],
+              ["Clean control", "Admins see live operations, risk and recoveries at a glance."],
+              ["Client-safe automation", "Every reminder is polished, branded and intentional."],
+            ].map(([title, copy]) => (
+              <div key={title} className="rounded-lg border border-border/70 bg-background/75 p-4">
+                <p className="text-sm font-semibold">{title}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{copy}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-lg border border-border/70 bg-primary px-6 py-7 text-primary-foreground shadow-glow">
+          <p className="text-eyebrow text-primary-foreground/70">Designed for modern service teams</p>
+          <p className="mt-3 text-3xl font-extrabold tracking-tight">One dashboard for billing rhythm, recovery and proof.</p>
+          <p className="mt-4 text-sm leading-6 text-primary-foreground/80">No bloated ERP energy. No fake enterprise theatre. Just elegant, agency-ready control.</p>
+        </div>
+      </div>
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {groups.map((g) => (
           <div key={g.cat} className="card-premium lift p-6">
@@ -223,7 +272,7 @@ function Features() {
 function Proof() {
   const data = [22, 34, 31, 48, 52, 61, 70, 76, 84, 88, 93, 96];
   return (
-    <Section tone="muted" eyebrow="Proof" title="Recovery rates that speak for themselves.">
+    <Section tone="muted" eyebrow="Proof" title="Recovery rates that speak for themselves." description="Believable momentum for a young product, presented with enough clarity to build trust at a glance.">
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="card-premium p-6 lg:col-span-3">
           <div className="flex items-end justify-between">
@@ -245,7 +294,7 @@ function Proof() {
         </div>
         <div className="grid gap-4 lg:col-span-2">
           {[
-            { v: "$48k+", l: "Recovered for early users" },
+            { v: "$18.6k", l: "Recovered for early users" },
             { v: "6 hrs", l: "Saved per agency / week" },
             { v: "−42%", l: "Reduction in overdue invoices" },
           ].map((s) => (
@@ -396,6 +445,20 @@ export function PricingTable({ compact = false }: { compact?: boolean }) {
 function Pricing({ compact }: { compact?: boolean }) {
   return (
     <Section eyebrow="Pricing" title="Transparent plans. No surprises." description="Start free for 14 days. Upgrade when you’re ready.">
+      <div className="mb-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="surface-panel rounded-lg p-7">
+          <p className="text-eyebrow">Pick your operating mode</p>
+          <h3 className="mt-3 text-h3">Simple pricing, built to scale from solo operator to revenue team.</h3>
+        </div>
+        <div className="card-premium p-6">
+          <p className="text-eyebrow">Included on every plan</p>
+          <div className="mt-4 space-y-2">
+            {["Secure auth & verification", "Clean onboarding", "Invoice reminders", "Responsive support"].map((item) => (
+              <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-success" /> {item}</div>
+            ))}
+          </div>
+        </div>
+      </div>
       <PricingTable compact={compact} />
       <div className="mt-8 flex justify-center">
         <Button variant="ghost" asChild>
@@ -468,7 +531,7 @@ function FinalCTA() {
                   <p className="text-eyebrow">This week</p>
                   <Building2 className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <p className="mt-2 text-3xl font-extrabold tracking-tight">$12,480 recovered</p>
+                <p className="mt-2 text-3xl font-extrabold tracking-tight">$3,840 recovered</p>
                 <p className="mt-1 text-sm text-muted-foreground">93% of invoices collected on time</p>
                 <div className="mt-5 flex h-2 w-full overflow-hidden rounded-full bg-muted">
                   <div className="h-full bg-success" style={{ width: "93%" }} />

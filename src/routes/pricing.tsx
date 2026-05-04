@@ -33,13 +33,30 @@ const matrix = [
 function PricingPage() {
   return (
     <MarketingLayout>
-      <section className="bg-hero">
-        <div className="container-page py-20 text-center md:py-24">
-          <p className="text-eyebrow">Pricing</p>
-          <h1 className="text-display mt-4">Simple. Transparent. Fair.</h1>
-          <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
-            14-day free trial on every plan. No credit card. Cancel anytime.
-          </p>
+      <section className="relative overflow-hidden bg-hero">
+        <div className="container-page grid gap-8 py-20 md:py-24 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+          <div className="text-center lg:text-left">
+            <p className="text-eyebrow">Pricing</p>
+            <h1 className="text-display mt-4">Simple. Transparent. Fair.</h1>
+            <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground lg:mx-0">
+              Premium billing operations without bloated enterprise pricing. Start free, upgrade when your volume grows.
+            </p>
+          </div>
+          <div className="surface-panel rounded-lg p-6 text-left">
+            <p className="text-eyebrow">What you’re buying</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              {[
+                "Faster invoice recovery",
+                "Cleaner client payment workflows",
+                "Live admin visibility",
+                "Secure onboarding and auth",
+              ].map((item) => (
+                <div key={item} className="rounded-lg border border-border/70 bg-background/70 px-4 py-3 text-sm text-muted-foreground">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -47,7 +64,10 @@ function PricingPage() {
         <PricingTable />
       </Section>
 
-      <Section tone="muted" eyebrow="Compare" title="Compare every plan.">
+      <Section tone="muted" eyebrow="Compare" title="Compare every plan." description="A cleaner side-by-side view for teams deciding between lean startup operations and full admin control.">
+        <div className="mb-6 surface-panel rounded-lg p-6">
+          <p className="text-sm text-muted-foreground">Starter is for getting organized. Pro is for active agencies. Business is for teams that need live controls, role-based visibility, and custom workflows.</p>
+        </div>
         <div className="overflow-x-auto card-premium">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
