@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 export function Section({
   eyebrow,
   title,
