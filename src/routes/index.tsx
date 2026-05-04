@@ -259,20 +259,34 @@ function Proof() {
 
       <div className="mt-10 grid gap-4 md:grid-cols-3">
         {[
-          { q: "We cut invoice-chasing time in half. The reminders alone paid for the plan.", n: "Mara K.", r: "Founder, Northwind Studio" },
-          { q: "Our milestone billing became predictable for the first time.", n: "Idris T.", r: "Ops Lead, Lumen Agency" },
-          { q: "Clients pay faster because the workflow is clearer.", n: "Jess R.", r: "Principal, Helix Labs" },
-        ].map((t) => (
-          <figure key={t.n} className="card-premium p-6">
-            <div className="flex gap-1 text-primary-glow" style={{ color: "var(--primary-glow)" }}>
-              {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
-            </div>
-            <blockquote className="mt-4 text-sm leading-relaxed">“{t.q}”</blockquote>
-            <figcaption className="mt-4 text-xs text-muted-foreground">
-              <span className="font-semibold text-foreground">{t.n}</span> · {t.r}
-            </figcaption>
-          </figure>
-        ))}
+          { q: "We cut invoice-chasing time in half. The reminders alone paid for the plan.", n: "Mara K.", r: "Founder · Northwind Studio", c: "from-rose-400 to-orange-400", logo: "Northwind" },
+          { q: "Our milestone billing became predictable for the first time.", n: "Idris T.", r: "Ops Lead · Lumen Agency", c: "from-sky-400 to-indigo-500", logo: "Lumen" },
+          { q: "Clients pay faster because the workflow is clearer.", n: "Jess R.", r: "Principal · Helix Labs", c: "from-emerald-400 to-teal-500", logo: "Helix" },
+        ].map((t) => {
+          const initials = t.n.split(" ").map((s) => s[0]).join("").toUpperCase();
+          return (
+            <figure key={t.n} className="card-premium lift p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex gap-1" style={{ color: "var(--primary-glow)" }}>
+                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
+                </div>
+                <span className="rounded-md border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  {t.logo}
+                </span>
+              </div>
+              <blockquote className="mt-4 font-serif text-[15px] leading-relaxed italic">"{t.q}"</blockquote>
+              <figcaption className="mt-5 flex items-center gap-3">
+                <span className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br ${t.c} text-xs font-bold text-white shadow-elegant`}>
+                  {initials}
+                </span>
+                <span className="text-xs">
+                  <span className="block font-semibold text-foreground">{t.n}</span>
+                  <span className="text-muted-foreground">{t.r}</span>
+                </span>
+              </figcaption>
+            </figure>
+          );
+        })}
       </div>
     </Section>
   );
@@ -280,22 +294,37 @@ function Proof() {
 
 function Trust() {
   const trust = [
-    { i: Lock, t: "TLS encrypted", d: "All traffic is encrypted in transit and at rest." },
-    { i: ShieldCheck, t: "Protected admin", d: "Role-based access with full audit logging." },
-    { i: BadgeCheck, t: "Privacy first", d: "GDPR-aligned; export or delete data anytime." },
-    { i: Receipt, t: "Audit trail", d: "Every change to invoices and milestones is recorded." },
+    { i: Lock, t: "TLS 1.3 encryption", d: "All traffic is encrypted in transit and at rest with AES-256." },
+    { i: ShieldCheck, t: "Role-based access", d: "Granular permissions with full admin audit logging." },
+    { i: BadgeCheck, t: "GDPR aligned", d: "Export or permanently delete your data anytime — no questions asked." },
+    { i: Receipt, t: "Immutable audit trail", d: "Every change to invoices and milestones is signed and recorded." },
+    { i: Cloud, t: "Daily encrypted backups", d: "Point-in-time recovery so your billing data is never lost." },
+    { i: Zap, t: "hCaptcha + bot shield", d: "Brute-force, scraping and credential-stuffing protection on every form." },
   ];
+  const badges = ["GDPR", "SOC 2 (in progress)", "TLS 1.3", "AES-256", "PCI ready"];
   return (
     <Section eyebrow="Trust & security" title="Built to be trusted with money." description="Boost Profits handles invoices and client data with the seriousness it deserves.">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {trust.map((t) => (
-          <div key={t.t} className="card-premium p-6">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-success/12 text-success">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {trust.map((t, i) => (
+          <div
+            key={t.t}
+            className="group relative card-premium lift overflow-hidden p-6"
+            style={{ animationDelay: `${i * 60}ms` }}
+          >
+            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-[var(--primary-glow)]/15 to-transparent transition-transform duration-500 group-hover:scale-125" />
+            <span className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--primary-glow)] text-primary-foreground shadow-elegant">
               <t.i className="h-5 w-5" />
             </span>
-            <h3 className="mt-5 text-base font-bold">{t.t}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{t.d}</p>
+            <h3 className="relative mt-5 text-base font-bold">{t.t}</h3>
+            <p className="relative mt-2 text-sm text-muted-foreground">{t.d}</p>
           </div>
+        ))}
+      </div>
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+        {badges.map((b) => (
+          <span key={b} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+            <ShieldCheck className="h-3.5 w-3.5 text-success" /> {b}
+          </span>
         ))}
       </div>
     </Section>

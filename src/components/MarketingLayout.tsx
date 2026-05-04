@@ -13,15 +13,20 @@ export function MarketingLayout({ children }: { children: React.ReactNode }) {
   }, [path]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="relative flex min-h-screen flex-col bg-background">
+      {/* Ambient backdrop — subtle navy aurora for depth */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-40 left-1/2 h-[480px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,oklch(0.62_0.13_250/0.12),transparent_60%)] blur-3xl" />
+        <div className="absolute bottom-[-200px] right-[-100px] h-[420px] w-[620px] rounded-full bg-[radial-gradient(ellipse_at_center,oklch(0.32_0.09_263/0.10),transparent_70%)] blur-3xl" />
+      </div>
       <SiteHeader />
       <AnimatePresence mode="wait">
         <motion.main
           key={path}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="flex-1"
         >
           {children}

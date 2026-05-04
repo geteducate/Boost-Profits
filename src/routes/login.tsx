@@ -96,7 +96,14 @@ export function AuthShell({ mode }: { mode: "login" | "signup" }) {
                 <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5" placeholder="jane@studio.com" />
               </div>
               <div>
-                <Label htmlFor="password">Password</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  {mode === "login" && (
+                    <Link to="/forgot-password" className="text-xs font-semibold text-foreground/80 hover:text-foreground hover:underline">
+                      Forgot?
+                    </Link>
+                  )}
+                </div>
                 <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1.5" placeholder="••••••••" />
               </div>
               <div className="pt-1">

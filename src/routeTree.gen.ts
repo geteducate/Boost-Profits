@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ServiceRouteImport } from './routes/service'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AppRouteImport } from './routes/app'
@@ -48,6 +50,11 @@ const ServiceRoute = ServiceRouteImport.update({
   path: '/service',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
@@ -56,6 +63,11 @@ const PricingRoute = PricingRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -185,8 +197,10 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/service': typeof ServiceRoute
   '/signup': typeof SignupRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -213,8 +227,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/service': typeof ServiceRoute
   '/signup': typeof SignupRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -244,8 +260,10 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/service': typeof ServiceRoute
   '/signup': typeof SignupRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -276,8 +294,10 @@ export interface FileRouteTypes {
     | '/app'
     | '/contact'
     | '/faq'
+    | '/forgot-password'
     | '/login'
     | '/pricing'
+    | '/reset-password'
     | '/service'
     | '/signup'
     | '/admin/audit'
@@ -304,8 +324,10 @@ export interface FileRouteTypes {
     | '/'
     | '/contact'
     | '/faq'
+    | '/forgot-password'
     | '/login'
     | '/pricing'
+    | '/reset-password'
     | '/service'
     | '/signup'
     | '/admin/audit'
@@ -334,8 +356,10 @@ export interface FileRouteTypes {
     | '/app'
     | '/contact'
     | '/faq'
+    | '/forgot-password'
     | '/login'
     | '/pricing'
+    | '/reset-password'
     | '/service'
     | '/signup'
     | '/admin/audit'
@@ -365,8 +389,10 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ServiceRoute: typeof ServiceRoute
   SignupRoute: typeof SignupRoute
 }
@@ -387,6 +413,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServiceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pricing': {
       id: '/pricing'
       path: '/pricing'
@@ -399,6 +432,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -632,8 +672,10 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ServiceRoute: ServiceRoute,
   SignupRoute: SignupRoute,
 }
