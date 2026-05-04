@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
+import { LegalDialog } from "./LegalDialog";
 
 export function SiteFooter() {
   return (
@@ -10,12 +11,12 @@ export function SiteFooter() {
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             Invoice collection and milestone payment automation for agencies, studios, and service businesses.
           </p>
-          <div className="mt-6 flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="mt-6 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-success" /> SSL secured
+              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" /> All systems operational
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1">
-              SOC-2 ready
+              SOC-2 in progress
             </span>
           </div>
         </div>
@@ -30,16 +31,20 @@ export function SiteFooter() {
           { to: "/service", label: "Customers" },
           { to: "/faq", label: "Security" },
         ]} />
-        <FooterCol title="Legal" links={[
-          { to: "/", label: "Privacy" },
-          { to: "/", label: "Terms" },
-          { to: "/", label: "DPA" },
-        ]} />
+        <div>
+          <h4 className="text-eyebrow mb-4">Legal</h4>
+          <ul className="space-y-2.5 text-sm">
+            <li><LegalDialog kind="legal"><button className="text-muted-foreground transition-colors hover:text-foreground">Legal</button></LegalDialog></li>
+            <li><LegalDialog kind="privacy"><button className="text-muted-foreground transition-colors hover:text-foreground">Privacy</button></LegalDialog></li>
+            <li><LegalDialog kind="terms"><button className="text-muted-foreground transition-colors hover:text-foreground">Terms</button></LegalDialog></li>
+            <li><LegalDialog kind="dpa"><button className="text-muted-foreground transition-colors hover:text-foreground">DPA</button></LegalDialog></li>
+          </ul>
+        </div>
       </div>
       <div className="border-t border-border">
         <div className="container-page flex flex-col items-center justify-between gap-3 py-6 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} Boost Profits. All rights reserved.</p>
-          <p>Built for agencies that get paid on time.</p>
+          <p>© {new Date().getFullYear()} Boost Profits, Inc. All rights reserved.</p>
+          <p>Built for agencies that want to get paid on time.</p>
         </div>
       </div>
     </footer>

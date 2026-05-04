@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -54,14 +55,21 @@ function ContactPage() {
           </div>
           <form
             className="card-premium p-7 lg:col-span-3"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
+              const fd = new FormData(e.target as HTMLFormElement);
               setLoading(true);
-              setTimeout(() => {
-                setLoading(false);
-                toast.success("Thanks — we’ll be in touch within one business day.");
-                (e.target as HTMLFormElement).reset();
-              }, 700);
+              const { error } = await supabase.from("leads").insert({
+                kind: "contact",
+                name: String(fd.get("name") || ""),
+                email: String(fd.get("email") || ""),
+                company: String(fd.get("company") || "") || null,
+                message: String(fd.get("msg") || ""),
+              });
+              setLoading(false);
+              if (error) { toast.error("Couldn't send — try again"); return; }
+              toast.success("Thanks — we'll be in touch within one business day.");
+              (e.target as HTMLFormElement).reset();
             }}
           >
             <div className="grid gap-4 sm:grid-cols-2">
