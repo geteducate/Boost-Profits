@@ -1,8 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
 import { AppShell, StatusPill } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/clients")({
   head: () => ({ meta: [{ title: "Clients — Boost Profits" }] }),
