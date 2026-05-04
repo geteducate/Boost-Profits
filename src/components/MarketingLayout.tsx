@@ -6,7 +6,7 @@ import { SiteFooter } from "./SiteFooter";
 import { CursorHalo } from "./CursorHalo";
 import { trackPageView } from "@/lib/tracking";
 
-export function MarketingLayout({ children }: { children: React.ReactNode }) {
+export function MarketingLayout({ children, hideFooter = false }: { children: React.ReactNode; hideFooter?: boolean }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
