@@ -22,7 +22,7 @@ function ProjectsPage() {
     <AppShell
       title="Projects"
       subtitle="Track scope, milestones and progress in one place."
-      actions={<Button className="bg-cta text-primary-foreground"><Plus className="mr-1.5 h-4 w-4" />New project</Button>}
+      actions={<Button onClick={() => toast.success("New project created")} className="bg-cta text-primary-foreground"><Plus className="mr-1.5 h-4 w-4" />New project</Button>}
     >
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {projects.map((p) => (

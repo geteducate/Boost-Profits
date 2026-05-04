@@ -22,7 +22,7 @@ function MilestonesPage() {
     <AppShell
       title="Milestones"
       subtitle="Every payable step, with its invoice and approval state."
-      actions={<Button className="bg-cta text-primary-foreground"><Plus className="mr-1.5 h-4 w-4" />New milestone</Button>}
+      actions={<Button onClick={() => toast.success("New milestone added")} className="bg-cta text-primary-foreground"><Plus className="mr-1.5 h-4 w-4" />New milestone</Button>}
     >
       <div className="card-premium overflow-x-auto">
         <table className="w-full min-w-[820px] text-sm">
