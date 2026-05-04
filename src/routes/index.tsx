@@ -306,38 +306,181 @@ function Proof() {
         </div>
       </div>
 
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
-        {[
-          { q: "We cut invoice-chasing time in half. The reminders alone paid for the plan.", n: "Mara K.", r: "Founder · Northwind Studio", c: "from-rose-400 to-orange-400", logo: "Northwind" },
-          { q: "Our milestone billing became predictable for the first time.", n: "Idris T.", r: "Ops Lead · Lumen Agency", c: "from-sky-400 to-indigo-500", logo: "Lumen" },
-          { q: "Clients pay faster because the workflow is clearer.", n: "Jess R.", r: "Principal · Helix Labs", c: "from-emerald-400 to-teal-500", logo: "Helix" },
-        ].map((t) => {
-          const initials = t.n.split(" ").map((s) => s[0]).join("").toUpperCase();
-          return (
-            <figure key={t.n} className="card-premium lift p-6">
+      <Testimonials />
+    </Section>
+  );
+}
+
+function Testimonials() {
+  const featured = {
+    q: "Within three weeks, two clients who used to drift 30+ days past due were paying inside a week. The reminders feel personal, not robotic — and the milestone gates mean nothing ships before it's invoiced. It quietly fixed the part of running an agency I hated most.",
+    n: "Mara Kowalski",
+    r: "Founder & Creative Director",
+    org: "Northwind Studio",
+    sector: "Brand & Web · 11 people",
+    metric: { v: "−63%", l: "days-sales-outstanding" },
+    c: "from-rose-400 via-orange-400 to-amber-300",
+    logo: "NORTHWIND",
+  };
+  const others = [
+    {
+      q: "Milestone billing finally feels predictable. We forecast cash a month out instead of guessing.",
+      n: "Idris Tariq",
+      r: "Operations Lead",
+      org: "Lumen Agency",
+      sector: "Performance Marketing · 24 people",
+      metric: { v: "$11.4k", l: "recovered in month one" },
+      c: "from-sky-400 to-indigo-500",
+      logo: "LUMEN",
+    },
+    {
+      q: "Clients pay faster because the workflow is clearer to them — not because we nag harder.",
+      n: "Jess Romero",
+      r: "Principal",
+      org: "Helix Labs",
+      sector: "Product Design · 6 people",
+      metric: { v: "8.2 days", l: "average time-to-pay" },
+      c: "from-emerald-400 to-teal-500",
+      logo: "HELIX",
+    },
+    {
+      q: "Setup took an afternoon. The audit log alone replaced two spreadsheets and a weekly check-in.",
+      n: "Priya Shah",
+      r: "Finance Manager",
+      org: "Atlas Collective",
+      sector: "Consulting · 18 people",
+      metric: { v: "6 hrs", l: "saved per week" },
+      c: "from-violet-400 to-fuchsia-500",
+      logo: "ATLAS",
+    },
+  ];
+
+  const Stars = () => (
+    <div className="flex gap-0.5" style={{ color: "var(--primary-glow)" }}>
+      {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}
+    </div>
+  );
+
+  const Avatar = ({ c, n }: { c: string; n: string }) => (
+    <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${c} text-xs font-bold text-white shadow-elegant ring-2 ring-background`}>
+      {n.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase()}
+    </span>
+  );
+
+  return (
+    <div className="mt-14">
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <p className="text-eyebrow">In their words</p>
+          <h3 className="mt-2 text-h3">Operators who stopped chasing money.</h3>
+        </div>
+        <div className="hidden items-center gap-2 md:flex">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-3 py-1 text-[11px] font-semibold text-muted-foreground">
+            <BadgeCheck className="h-3.5 w-3.5 text-success" /> Verified customers
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-3 py-1 text-[11px] font-semibold text-muted-foreground">
+            <Star className="h-3.5 w-3.5 fill-current" style={{ color: "var(--primary-glow)" }} /> 4.9 average
+          </span>
+        </div>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-5">
+        {/* Featured testimonial */}
+        <figure className="card-premium relative overflow-hidden p-7 lg:col-span-3 lg:p-9">
+          <div aria-hidden className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-gradient-to-br from-[var(--primary-glow)]/18 to-transparent blur-2xl" />
+          <div aria-hidden className="absolute right-6 top-6 font-serif text-[120px] leading-none text-[var(--primary)]/8 select-none">"</div>
+          <div className="relative flex items-center justify-between">
+            <Stars />
+            <span className="rounded-md border border-border bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+              {featured.logo}
+            </span>
+          </div>
+          <blockquote className="relative mt-6 font-serif text-xl leading-relaxed text-foreground/90 md:text-[22px]">
+            "{featured.q}"
+          </blockquote>
+          <div className="relative mt-7 flex flex-wrap items-center justify-between gap-5 border-t border-border/70 pt-5">
+            <figcaption className="flex items-center gap-3">
+              <Avatar c={featured.c} n={featured.n} />
+              <span className="text-sm">
+                <span className="block font-semibold text-foreground">{featured.n}</span>
+                <span className="text-muted-foreground">{featured.r} · {featured.org}</span>
+                <span className="mt-0.5 block text-[11px] uppercase tracking-wider text-muted-foreground/80">{featured.sector}</span>
+              </span>
+            </figcaption>
+            <div className="rounded-lg border border-border bg-muted/40 px-4 py-2.5">
+              <p className="text-2xl font-extrabold tracking-tight text-foreground">{featured.metric.v}</p>
+              <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{featured.metric.l}</p>
+            </div>
+          </div>
+        </figure>
+
+        {/* Stacked testimonials */}
+        <div className="grid gap-5 lg:col-span-2">
+          {others.slice(0, 2).map((t) => (
+            <figure key={t.n} className="card-premium lift p-5">
               <div className="flex items-center justify-between">
-                <div className="flex gap-1" style={{ color: "var(--primary-glow)" }}>
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
-                </div>
-                <span className="rounded-md border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                <Stars />
+                <span className="rounded-md border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
                   {t.logo}
                 </span>
               </div>
-              <blockquote className="mt-4 font-serif text-[15px] leading-relaxed italic">"{t.q}"</blockquote>
-              <figcaption className="mt-5 flex items-center gap-3">
-                <span className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br ${t.c} text-xs font-bold text-white shadow-elegant`}>
-                  {initials}
-                </span>
-                <span className="text-xs">
-                  <span className="block font-semibold text-foreground">{t.n}</span>
-                  <span className="text-muted-foreground">{t.r}</span>
-                </span>
+              <blockquote className="mt-3 font-serif text-[15px] leading-relaxed text-foreground/90">"{t.q}"</blockquote>
+              <figcaption className="mt-4 flex items-center justify-between gap-3 border-t border-border/60 pt-3">
+                <div className="flex items-center gap-2.5">
+                  <Avatar c={t.c} n={t.n} />
+                  <span className="text-xs">
+                    <span className="block font-semibold text-foreground">{t.n}</span>
+                    <span className="text-muted-foreground">{t.r} · {t.org}</span>
+                  </span>
+                </div>
+                <div className="text-right">
+                  <p className="text-base font-extrabold tracking-tight">{t.metric.v}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.metric.l}</p>
+                </div>
               </figcaption>
             </figure>
-          );
-        })}
+          ))}
+        </div>
       </div>
-    </Section>
+
+      {/* Fourth testimonial — full-width slim */}
+      <figure className="card-premium lift mt-5 flex flex-col gap-4 p-5 md:flex-row md:items-center md:gap-6 md:p-6">
+        <div className="flex items-center gap-3 md:w-64 md:shrink-0">
+          <Avatar c={others[2].c} n={others[2].n} />
+          <span className="text-xs">
+            <span className="block font-semibold text-foreground">{others[2].n}</span>
+            <span className="text-muted-foreground">{others[2].r} · {others[2].org}</span>
+          </span>
+        </div>
+        <blockquote className="flex-1 font-serif text-[15px] leading-relaxed text-foreground/90 md:border-l md:border-border/60 md:pl-6">
+          "{others[2].q}"
+        </blockquote>
+        <div className="flex items-center gap-4 md:gap-6">
+          <Stars />
+          <div className="text-right">
+            <p className="text-base font-extrabold tracking-tight">{others[2].metric.v}</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{others[2].metric.l}</p>
+          </div>
+        </div>
+      </figure>
+
+      {/* Trust strip */}
+      <div className="mt-8 rounded-xl border border-border/70 bg-background/60 px-6 py-5 backdrop-blur-sm">
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70">
+          <span>Northwind</span>
+          <span className="hidden h-3 w-px bg-border md:block" />
+          <span>Lumen</span>
+          <span className="hidden h-3 w-px bg-border md:block" />
+          <span>Helix Labs</span>
+          <span className="hidden h-3 w-px bg-border md:block" />
+          <span>Atlas Collective</span>
+          <span className="hidden h-3 w-px bg-border md:block" />
+          <span>Meridian Co.</span>
+          <span className="hidden h-3 w-px bg-border md:block" />
+          <span>Forge & Form</span>
+        </div>
+      </div>
+    </div>
   );
 }
 
