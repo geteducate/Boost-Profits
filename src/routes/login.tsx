@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { LegalDialog } from "@/components/LegalDialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { verifyCaptcha } from "@/server/captcha.functions";
+import { useSession } from "@/hooks/useSession";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Login — Boost Profits" }, { name: "description", content: "Sign in to Boost Profits." }] }),
@@ -22,11 +23,16 @@ function LoginPage() {
 
 export function AuthShell({ mode }: { mode: "login" | "signup" }) {
   const nav = useNavigate();
+  const { user } = useSession();
   const [loading, setLoading] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (user) nav({ to: "/app" });
+  }, [user, nav]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,13 +58,13 @@ export function AuthShell({ mode }: { mode: "login" | "signup" }) {
           },
         });
         if (error) throw error;
-        toast.success("Account created — welcome!");
+        toast.success("Account created — check your email to verify your address.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Welcome back");
       }
-      nav({ to: "/app" });
+      if (mode === "login") nav({ to: "/app" });
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
     } finally {
@@ -84,6 +90,11 @@ export function AuthShell({ mode }: { mode: "login" | "signup" }) {
             <p className="mt-2 text-sm text-muted-foreground">
               {mode === "login" ? "Sign in to keep your cash flowing." : "Start collecting invoices today."}
             </p>
+            {mode === "signup" && (
+              <div className="mt-5 rounded-lg border border-border bg-muted/40 px-4 py-3 text-xs text-muted-foreground">
+                We’ll send a verification email before first access so accounts stay secure and recoverable.
+              </div>
+            )}
             <div className="mt-7 space-y-4">
               {mode === "signup" && (
                 <div>
