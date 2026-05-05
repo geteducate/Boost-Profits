@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Captcha } from "@/components/Captcha";
-import { LegalDialog } from "@/components/LegalDialog";
+
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { verifyCaptcha } from "@/server/captcha.functions";
@@ -134,8 +134,8 @@ export function AuthShell({ mode }: { mode: "login" | "signup" }) {
             {mode === "signup" && (
               <p className="mt-4 text-center text-[11px] text-muted-foreground">
                 By signing up you agree to our{" "}
-                <LegalDialog kind="terms"><button type="button" className="underline">Terms</button></LegalDialog> and{" "}
-                <LegalDialog kind="privacy"><button type="button" className="underline">Privacy Policy</button></LegalDialog>.
+                <Link to="/terms" className="underline">Terms</Link> and{" "}
+                <Link to="/privacy" className="underline">Privacy Policy</Link>.
               </p>
             )}
           </motion.form>
