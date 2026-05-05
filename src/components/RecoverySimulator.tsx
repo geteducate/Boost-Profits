@@ -244,20 +244,20 @@ export function RecoverySimulator() {
               </div>
             </div>
 
-            {/* Arena + ticker */}
+            {/* Quest board + ticker */}
             <div className="grid gap-5 md:grid-cols-5">
               <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl md:col-span-3">
                 <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
                   <div className="flex items-center gap-2">
                     <Zap className="h-4 w-4 text-white/70" />
-                    <p className="text-sm font-semibold tracking-tight">Invoice Race · Live</p>
+                    <p className="text-sm font-semibold tracking-tight">Payoff Quest · Live</p>
                   </div>
                   <div className="flex items-center gap-3 text-[11px]">
-                    <LegendDot color="oklch(0.7 0.2 25)" label="Late zone" />
-                    <LegendDot color="oklch(0.78 0.16 250)" label="Paid" />
+                    <LegendDot color="oklch(0.78 0.16 250)" label="Token" />
+                    <LegendDot color="oklch(0.82 0.18 145)" label="Cleared" />
                   </div>
                 </div>
-                <RecoveryArena lift={result.lift} avgValue={avgValue} active={inView} />
+                <PayoffQuest lift={result.lift} avgValue={avgValue} active={inView} />
               </div>
 
               {/* Live paid feed */}
