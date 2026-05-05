@@ -9,12 +9,12 @@ import { Activity, TrendingUp } from "lucide-react";
  */
 export function LiveGraph() {
   const POINTS = 32;
+  // Deterministic initial series so SSR HTML matches first client render (no hydration mismatch).
   const [series, setSeries] = useState<number[]>(() => {
     const out: number[] = [];
-    let v = 12;
     for (let i = 0; i < POINTS; i++) {
-      v += (Math.random() - 0.45) * 3 + 0.15;
-      out.push(Math.max(6, Math.min(34, v)));
+      // gentle sine-based wave between ~10 and ~26
+      out.push(18 + Math.sin(i / 3) * 6 + Math.cos(i / 5) * 2);
     }
     return out;
   });
@@ -23,6 +23,16 @@ export function LiveGraph() {
   const tRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
+    // Randomize series only after mount (client-only).
+    setSeries((prev) => {
+      const out: number[] = [];
+      let v = 12;
+      for (let i = 0; i < prev.length; i++) {
+        v += (Math.random() - 0.45) * 3 + 0.15;
+        out.push(Math.max(6, Math.min(34, v)));
+      }
+      return out;
+    });
     const tick = () => {
       setSeries((prev) => {
         const last = prev[prev.length - 1];
@@ -35,6 +45,7 @@ export function LiveGraph() {
     tRef.current = window.setInterval(tick, 1600);
     return () => window.clearInterval(tRef.current);
   }, []);
+
 
   const w = 600, h = 180, pad = 8;
   const max = Math.max(...series), min = Math.min(...series);
