@@ -75,6 +75,8 @@ function SettingsPage() {
               <Toggle label="Daily AR digest" checked={notifs.digest} onChange={(v) => setNotifs((n) => ({ ...n, digest: v }))} />
               <Toggle label="Confetti on payment received" checked={notifs.confetti} onChange={(v) => setNotifs((n) => ({ ...n, confetti: v }))} />
             </div>
+          ) : active === "Billing" ? (
+            <BillingPanel />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Full name" value={draft.fullName} onChange={(v) => setDraft({ ...draft, fullName: v })} />
@@ -84,13 +86,65 @@ function SettingsPage() {
             </div>
           )}
 
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={cancel}>Cancel</Button>
-            <Button type="submit" className="bg-cta text-primary-foreground">Save changes</Button>
-          </div>
+          {active !== "Billing" && (
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={cancel}>Cancel</Button>
+              <Button type="submit" className="bg-cta text-primary-foreground">Save changes</Button>
+            </div>
+          )}
         </form>
       </div>
     </AppShell>
+  );
+}
+
+function BillingPanel() {
+  const { subscription, tier, isActive, loading } = useSubscription();
+  const [opening, setOpening] = useState(false);
+  const openPortal = async () => {
+    if (!subscription) return;
+    setOpening(true);
+    try {
+      const { url } = await createPortalSession({ data: { environment: subscription.environment as any } });
+      window.open(url, "_blank");
+    } catch (e: any) {
+      toast.error(e.message || "Could not open billing portal");
+    } finally {
+      setOpening(false);
+    }
+  };
+  if (loading) return <p className="text-sm text-muted-foreground">Loading…</p>;
+  if (!subscription) {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">No active subscription.</p>
+        <Button asChild className="bg-cta text-primary-foreground"><a href="/pricing">View plans</a></Button>
+      </div>
+    );
+  }
+  const tierName = tier ? tier.charAt(0).toUpperCase() + tier.slice(1) : "—";
+  const cycle = subscription.price_id?.includes("yearly") ? "Yearly" : "Monthly";
+  const renewLabel = subscription.cancel_at_period_end ? "Ends on" : subscription.status === "trialing" ? "Trial ends" : "Renews on";
+  return (
+    <div className="space-y-5">
+      <div className="rounded-lg border border-border p-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-eyebrow">Current plan</p>
+            <p className="mt-1 text-xl font-bold">{tierName} <span className="text-sm font-normal text-muted-foreground">· {cycle}</span></p>
+          </div>
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${isActive ? "bg-success/15 text-success" : "bg-destructive/15 text-destructive"}`}>{subscription.status}</span>
+        </div>
+        {subscription.current_period_end && (
+          <p className="mt-3 text-sm text-muted-foreground">{renewLabel} {new Date(subscription.current_period_end).toLocaleDateString()}</p>
+        )}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={openPortal} disabled={opening} className="bg-cta text-primary-foreground">{opening ? "Opening…" : "Manage subscription"}</Button>
+        <Button variant="outline" asChild><a href="/pricing">Change plan</a></Button>
+      </div>
+      <p className="text-xs text-muted-foreground">Manage subscription opens the secure billing portal where you can update your card, change plan, download invoices, or cancel.</p>
+    </div>
   );
 }
 
