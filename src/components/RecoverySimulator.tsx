@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import {
-  ArrowRight, BadgeCheck, Bell, CalendarClock, CheckCircle2, Clock, FileText,
+  ArrowRight, BadgeCheck, Bell, CheckCircle2, Clock, FileText,
   Info, Lock, Radio, ShieldCheck, Sparkles, TrendingUp, Wallet, Workflow, Zap,
 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
@@ -80,19 +80,8 @@ export function RecoverySimulator() {
   const hoursAnim = useCountUp(result.hoursSaved);
   const scoreAnim = useCountUp(result.score, 700);
 
-  const months = 12;
-  const series = useMemo(() => {
-    const current: number[] = [];
-    const improved: number[] = [];
-    for (let i = 0; i < months; i++) {
-      const seasonal = 1 + Math.sin((i / months) * Math.PI * 2) * 0.06;
-      const baseLate = result.lateAmount * seasonal;
-      current.push(baseLate);
-      const monthRecover = result.recovered * seasonal;
-      improved.push(Math.max(0, baseLate - monthRecover));
-    }
-    return { current, improved };
-  }, [result.lateAmount, result.recovered]);
+  void daysLate;
+
 
   /* Live "invoice paid" ticker */
   type Tick = { id: number; client: string; amount: number };
