@@ -506,42 +506,56 @@ function Trust() {
 
 export function PricingTable({ compact = false }: { compact?: boolean }) {
   const { openCheckout, loading } = usePricingCheckout();
+  const [cycle, setCycle] = useState<"monthly" | "yearly">("monthly");
   const tiers = [
-    { name: "Starter", priceId: "starter_monthly", price: 39, best: "Solo consultants & freelancers", features: ["Up to 25 invoices / mo", "10 active clients", "Automated reminders", "Basic analytics"], cta: "Subscribe", featured: false },
-    { name: "Pro", priceId: "pro_monthly", price: 79, best: "Small agencies & studios", features: ["Up to 200 invoices / mo", "Unlimited clients", "Milestone automation", "Google Sheets sync", "Source & UTM tracking"], cta: "Start 14-day trial", featured: true },
-    { name: "Business", priceId: "business_monthly", price: 149, best: "Multi-team service businesses", features: ["Unlimited invoices", "Admin panel & roles", "Audit logs & exports", "Priority support", "Custom workflows"], cta: "Start 14-day trial", featured: false },
+    { name: "Starter", monthlyId: "starter_monthly", yearlyId: "starter_yearly", monthly: 39, yearly: 390, best: "Solo consultants & freelancers", features: ["Up to 25 invoices / mo", "10 active clients", "Automated reminders", "Basic analytics"], cta: "Subscribe", featured: false },
+    { name: "Pro", monthlyId: "pro_monthly", yearlyId: "pro_yearly", monthly: 79, yearly: 790, best: "Small agencies & studios", features: ["Up to 200 invoices / mo", "Unlimited clients", "Milestone automation", "Google Sheets sync", "Source & UTM tracking"], cta: "Start 14-day trial", featured: true },
+    { name: "Business", monthlyId: "business_monthly", yearlyId: "business_yearly", monthly: 149, yearly: 1490, best: "Multi-team service businesses", features: ["Unlimited invoices", "Admin panel & roles", "Audit logs & exports", "Priority support", "Custom workflows"], cta: "Start 14-day trial", featured: false },
   ];
   return (
-    <div className="grid gap-5 md:grid-cols-3">
-      {tiers.map((t) => (
-        <div key={t.name} className={`relative card-premium p-7 ${t.featured ? "border-primary/40 shadow-glow" : ""}`}>
-          {t.featured && (
-            <span className="absolute -top-3 left-7 rounded-full bg-cta px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary-foreground">Most popular</span>
-          )}
-          <p className="text-eyebrow">{t.name}</p>
-          <div className="mt-3 flex items-end gap-1.5">
-            <span className="text-5xl font-extrabold tracking-tight">${t.price}</span>
-            <span className="mb-1.5 text-sm text-muted-foreground">/month</span>
-          </div>
-          <p className="mt-1 text-sm text-muted-foreground">{t.best}</p>
-          <ul className="mt-6 space-y-2.5">
-            {t.features.map((f) => (
-              <li key={f} className="flex items-start gap-2 text-sm">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /> {f}
-              </li>
-            ))}
-          </ul>
-          <Button
-            onClick={() => openCheckout(t.priceId)}
-            disabled={loading}
-            className={`mt-7 h-11 w-full ${t.featured ? "bg-cta text-primary-foreground" : ""}`}
-            variant={t.featured ? "default" : "outline"}
-          >
-            {t.cta}
-          </Button>
+    <div>
+      <div className="mb-6 flex justify-center">
+        <div className="inline-flex rounded-lg border border-border bg-background p-1">
+          <button onClick={() => setCycle("monthly")} className={`px-4 py-1.5 rounded-md text-sm font-semibold ${cycle === "monthly" ? "bg-cta text-primary-foreground" : "text-muted-foreground"}`}>Monthly</button>
+          <button onClick={() => setCycle("yearly")} className={`px-4 py-1.5 rounded-md text-sm font-semibold ${cycle === "yearly" ? "bg-cta text-primary-foreground" : "text-muted-foreground"}`}>Yearly <span className="ml-1 text-[10px] opacity-80">2 months free</span></button>
         </div>
-      ))}
-      {!compact && null}
+      </div>
+      <div className="grid gap-5 md:grid-cols-3">
+        {tiers.map((t) => {
+          const priceId = cycle === "monthly" ? t.monthlyId : t.yearlyId;
+          const displayPrice = cycle === "monthly" ? t.monthly : Math.round(t.yearly / 12);
+          return (
+            <div key={t.name} className={`relative card-premium p-7 ${t.featured ? "border-primary/40 shadow-glow" : ""}`}>
+              {t.featured && (
+                <span className="absolute -top-3 left-7 rounded-full bg-cta px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary-foreground">Most popular</span>
+              )}
+              <p className="text-eyebrow">{t.name}</p>
+              <div className="mt-3 flex items-end gap-1.5">
+                <span className="text-5xl font-extrabold tracking-tight">${displayPrice}</span>
+                <span className="mb-1.5 text-sm text-muted-foreground">/month</span>
+              </div>
+              {cycle === "yearly" && <p className="mt-1 text-xs text-success font-semibold">Billed ${t.yearly}/year</p>}
+              <p className="mt-1 text-sm text-muted-foreground">{t.best}</p>
+              <ul className="mt-6 space-y-2.5">
+                {t.features.map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-sm">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /> {f}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                onClick={() => openCheckout(priceId)}
+                disabled={loading}
+                className={`mt-7 h-11 w-full ${t.featured ? "bg-cta text-primary-foreground" : ""}`}
+                variant={t.featured ? "default" : "outline"}
+              >
+                {t.cta}
+              </Button>
+            </div>
+          );
+        })}
+        {!compact && null}
+      </div>
     </div>
   );
 }
