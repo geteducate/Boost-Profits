@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import { getCaptchaSiteKey } from "@/server/captcha.functions";
+import { getCaptchaSiteKey } from "@/utils/captcha.functions";
 import { ShieldCheck } from "lucide-react";
 
 export function Captcha({ onVerify }: { onVerify: (token: string | null) => void }) {

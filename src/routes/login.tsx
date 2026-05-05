@@ -9,7 +9,7 @@ import { Captcha } from "@/components/Captcha";
 
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { verifyCaptcha } from "@/server/captcha.functions";
+import { verifyCaptcha } from "@/utils/captcha.functions";
 import { useSession } from "@/hooks/useSession";
 
 export const Route = createFileRoute("/login")({
