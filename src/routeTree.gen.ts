@@ -31,6 +31,7 @@ import { Route as AppInvoicesRouteImport } from './routes/app.invoices'
 import { Route as AppIntegrationsRouteImport } from './routes/app.integrations'
 import { Route as AppClientsRouteImport } from './routes/app.clients'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AdminVisitorsRouteImport } from './routes/admin.visitors'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSourcesRouteImport } from './routes/admin.sources'
@@ -150,6 +151,11 @@ const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminVisitorsRoute = AdminVisitorsRouteImport.update({
   id: '/visitors',
   path: '/visitors',
@@ -211,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/admin/sources': typeof AdminSourcesRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/visitors': typeof AdminVisitorsRoute
+  '/api/chat': typeof ApiChatRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/clients': typeof AppClientsRoute
   '/app/integrations': typeof AppIntegrationsRoute
@@ -241,6 +248,7 @@ export interface FileRoutesByTo {
   '/admin/sources': typeof AdminSourcesRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/visitors': typeof AdminVisitorsRoute
+  '/api/chat': typeof ApiChatRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/clients': typeof AppClientsRoute
   '/app/integrations': typeof AppIntegrationsRoute
@@ -274,6 +282,7 @@ export interface FileRoutesById {
   '/admin/sources': typeof AdminSourcesRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/visitors': typeof AdminVisitorsRoute
+  '/api/chat': typeof ApiChatRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/clients': typeof AppClientsRoute
   '/app/integrations': typeof AppIntegrationsRoute
@@ -308,6 +317,7 @@ export interface FileRouteTypes {
     | '/admin/sources'
     | '/admin/users'
     | '/admin/visitors'
+    | '/api/chat'
     | '/app/analytics'
     | '/app/clients'
     | '/app/integrations'
@@ -338,6 +348,7 @@ export interface FileRouteTypes {
     | '/admin/sources'
     | '/admin/users'
     | '/admin/visitors'
+    | '/api/chat'
     | '/app/analytics'
     | '/app/clients'
     | '/app/integrations'
@@ -370,6 +381,7 @@ export interface FileRouteTypes {
     | '/admin/sources'
     | '/admin/users'
     | '/admin/visitors'
+    | '/api/chat'
     | '/app/analytics'
     | '/app/clients'
     | '/app/integrations'
@@ -395,6 +407,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServiceRoute: typeof ServiceRoute
   SignupRoute: typeof SignupRoute
+  ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -553,6 +566,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAnalyticsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/visitors': {
       id: '/admin/visitors'
       path: '/visitors'
@@ -678,6 +698,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ServiceRoute: ServiceRoute,
   SignupRoute: SignupRoute,
+  ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
