@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import { motion, AnimatePresence } from "framer-motion";
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
 import { ChatWidget } from "./ChatWidget";
@@ -21,18 +20,7 @@ export function MarketingLayout({ children }: { children: React.ReactNode }) {
         <div className="absolute bottom-[-200px] right-[-100px] h-[420px] w-[620px] rounded-full bg-[radial-gradient(ellipse_at_center,oklch(0.32_0.09_263/0.10),transparent_70%)] blur-3xl" />
       </div>
       <SiteHeader />
-      <AnimatePresence mode="wait">
-        <motion.main
-          key={path}
-          initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="flex-1"
-        >
-          {children}
-        </motion.main>
-      </AnimatePresence>
+      <main className="flex-1">{children}</main>
       <SiteFooter />
       <ChatWidget />
     </div>
