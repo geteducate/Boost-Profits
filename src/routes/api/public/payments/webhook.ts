@@ -24,7 +24,7 @@ async function handleSubscriptionCreated(data: any, env: PaddleEnv) {
     console.warn("Skipping subscription: missing importMeta.externalId");
     return;
   }
-  await getSupabase().from("subscriptions").upsert({
+  await (getSupabase() as any).from("subscriptions").upsert({
     user_id: userId,
     paddle_subscription_id: id,
     paddle_customer_id: customerId,
@@ -52,14 +52,14 @@ async function handleSubscriptionUpdated(data: any, env: PaddleEnv) {
   // For at-next-renewal plan changes, scheduledChange may also reflect new items.
   if (item?.price?.importMeta?.externalId) update.price_id = item.price.importMeta.externalId;
   if (item?.product?.importMeta?.externalId) update.product_id = item.product.importMeta.externalId;
-  await getSupabase().from("subscriptions")
+  await (getSupabase() as any).from("subscriptions")
     .update(update)
     .eq("paddle_subscription_id", id)
     .eq("environment", env);
 }
 
 async function handleSubscriptionCanceled(data: any, env: PaddleEnv) {
-  await getSupabase().from("subscriptions")
+  await (getSupabase() as any).from("subscriptions")
     .update({
       status: "canceled",
       current_period_end: data.currentBillingPeriod?.endsAt ?? data.canceledAt,
