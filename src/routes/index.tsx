@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, BadgeCheck, BarChart3, Bell, Building2, CheckCircle2, ClipboardList, Cloud, FileText, Lock, Receipt, Send, ShieldCheck, Sparkles, Star, TrendingUp, Users, Workflow, Zap } from "lucide-react";
 import { MarketingLayout } from "@/components/MarketingLayout";
