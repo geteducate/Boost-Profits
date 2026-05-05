@@ -244,20 +244,20 @@ export function RecoverySimulator() {
               </div>
             </div>
 
-            {/* Arena + ticker */}
+            {/* Quest board + ticker */}
             <div className="grid gap-5 md:grid-cols-5">
               <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl md:col-span-3">
                 <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
                   <div className="flex items-center gap-2">
                     <Zap className="h-4 w-4 text-white/70" />
-                    <p className="text-sm font-semibold tracking-tight">Invoice Race · Live</p>
+                    <p className="text-sm font-semibold tracking-tight">Payoff Quest · Live</p>
                   </div>
                   <div className="flex items-center gap-3 text-[11px]">
-                    <LegendDot color="oklch(0.7 0.2 25)" label="Late zone" />
-                    <LegendDot color="oklch(0.78 0.16 250)" label="Paid" />
+                    <LegendDot color="oklch(0.78 0.16 250)" label="Token" />
+                    <LegendDot color="oklch(0.82 0.18 145)" label="Cleared" />
                   </div>
                 </div>
-                <RecoveryArena lift={result.lift} avgValue={avgValue} active={inView} />
+                <PayoffQuest lift={result.lift} avgValue={avgValue} active={inView} />
               </div>
 
               {/* Live paid feed */}
@@ -397,50 +397,61 @@ function LegendDot({ color, label }: { color: string; label: string }) {
 }
 
 /* ============================================================
-   RecoveryArena — game-like "Invoice Race"
+   PayoffQuest — game-board milestone payoff visualization
+   Each invoice is a token that hops node→node along a path of
+   payment milestones (Sent → Viewed → Approved → Nudge → Paid).
    ============================================================ */
-type Chip = {
+
+type Stage = { key: string; label: string; icon: string };
+const STAGES: Stage[] = [
+  { key: "sent", label: "Sent", icon: "✉" },
+  { key: "viewed", label: "Viewed", icon: "👁" },
+  { key: "approved", label: "Approved", icon: "✓" },
+  { key: "nudge", label: "Nudge", icon: "🔔" },
+  { key: "paid", label: "Paid", icon: "★" },
+];
+
+type Token = {
   id: number;
   client: string;
   amount: number;
-  lane: number;       // 0..lanes-1
-  progress: number;   // 0..1
-  status: "running" | "stuck" | "paid";
-  speed: number;
-  born: number;
+  stage: number;
+  lane: number;
+  status: "hopping" | "idle" | "cleared" | "stalled";
+  nextAt: number;
+  willStall: boolean;
 };
 
-function RecoveryArena({ lift, avgValue, active }: { lift: number; avgValue: number; active: boolean }) {
-  const lanes = 5;
-  const [chips, setChips] = useState<Chip[]>([]);
-  const [hud, setHud] = useState({ paid: 0, stuck: 0, recovered: 0, combo: 0 });
-  const idRef = useRef(1000);
-  const rafRef = useRef<number>(0);
-  const lastRef = useRef<number>(performance.now());
+type Burst = { id: number; x: number; y: number; amount: number };
 
-  // spawn chips
+function PayoffQuest({ lift, avgValue, active }: { lift: number; avgValue: number; active: boolean }) {
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [bursts, setBursts] = useState<Burst[]>([]);
+  const [hud, setHud] = useState({ cleared: 0, recovered: 0, combo: 0, best: 0 });
+  const [fills, setFills] = useState<number[]>(() => STAGES.map(() => 0));
+  const idRef = useRef(2000);
+  const burstIdRef = useRef(5000);
+
+  // Spawn tokens
   useEffect(() => {
     if (!active) return;
     let alive = true;
     const spawn = () => {
       if (!alive) return;
       idRef.current += 1;
-      const willPay = Math.random() < 0.35 + lift * 0.6; // higher lift => more paid
-      const amount = Math.round(avgValue * (0.4 + Math.random() * 1.6));
-      const chip: Chip = {
+      const willStall = Math.random() > 0.45 + lift * 0.55;
+      const tok: Token = {
         id: idRef.current,
         client: CLIENTS[Math.floor(Math.random() * CLIENTS.length)],
-        amount,
-        lane: Math.floor(Math.random() * lanes),
-        progress: 0,
-        status: willPay ? "running" : "running",
-        speed: 0.18 + Math.random() * 0.12 + lift * 0.18,
-        born: performance.now(),
+        amount: Math.round(avgValue * (0.5 + Math.random() * 1.5)),
+        stage: 0,
+        lane: Math.floor(Math.random() * 3),
+        status: "idle",
+        nextAt: performance.now() + 350 + Math.random() * 400,
+        willStall,
       };
-      // pre-decide if it'll get stuck
-      (chip as Chip & { _willStick: boolean })._willStick = !willPay;
-      setChips((prev) => [...prev.slice(-14), chip]);
-      setTimeout(spawn, 480 + Math.random() * 380);
+      setTokens((prev) => [...prev.slice(-9), tok]);
+      setTimeout(spawn, 900 + Math.random() * 600);
     };
     spawn();
     return () => {
@@ -448,141 +459,226 @@ function RecoveryArena({ lift, avgValue, active }: { lift: number; avgValue: num
     };
   }, [active, lift, avgValue]);
 
-  // animation loop
+  // Hop loop
   useEffect(() => {
     if (!active) return;
+    let raf = 0;
     const tick = (t: number) => {
-      const dt = Math.min(0.05, (t - lastRef.current) / 1000);
-      lastRef.current = t;
-      setChips((prev) => {
-        const next: Chip[] = [];
-        let paidAdd = 0;
-        let stuckAdd = 0;
+      setTokens((prev) => {
         let recoveredAdd = 0;
-        for (const c of prev) {
-          if (c.status === "paid" || c.status === "stuck") {
-            // keep visible briefly then drop
-            if (t - c.born < 4200) next.push(c);
+        let clearedAdd = 0;
+        let stalledAdd = 0;
+        const stageHits: number[] = [];
+        const next: Token[] = [];
+        for (const tok of prev) {
+          if (tok.status === "cleared" || tok.status === "stalled") {
+            if (t - tok.nextAt < 1800) next.push(tok);
             continue;
           }
-          let p = c.progress + c.speed * dt;
-          const willStick = (c as Chip & { _willStick?: boolean })._willStick;
-          if (willStick && p > 0.55) {
-            next.push({ ...c, progress: 0.58, status: "stuck", born: t });
-            stuckAdd += 1;
-            continue;
+          if (t >= tok.nextAt) {
+            const newStage = tok.stage + 1;
+            if (tok.willStall && newStage === STAGES.length - 1) {
+              next.push({ ...tok, status: "stalled", nextAt: t });
+              stalledAdd += 1;
+              continue;
+            }
+            stageHits.push(newStage);
+            if (newStage >= STAGES.length - 1) {
+              recoveredAdd += tok.amount;
+              clearedAdd += 1;
+              next.push({ ...tok, stage: newStage, status: "cleared", nextAt: t });
+              burstIdRef.current += 1;
+              setBursts((b) => [
+                ...b.slice(-6),
+                { id: burstIdRef.current, x: 92, y: 50 + (tok.lane - 1) * 14, amount: tok.amount },
+              ]);
+              continue;
+            }
+            next.push({
+              ...tok,
+              stage: newStage,
+              status: "hopping",
+              nextAt: t + Math.max(220, 600 + Math.random() * 500 - lift * 280),
+            });
+          } else {
+            next.push(tok);
           }
-          if (p >= 1) {
-            next.push({ ...c, progress: 1, status: "paid", born: t });
-            paidAdd += 1;
-            recoveredAdd += c.amount;
-            continue;
-          }
-          next.push({ ...c, progress: p });
         }
-        if (paidAdd || stuckAdd) {
-          setHud((h) => ({
-            paid: h.paid + paidAdd,
-            stuck: h.stuck + stuckAdd,
-            recovered: h.recovered + recoveredAdd,
-            combo: paidAdd ? h.combo + paidAdd : 0,
-          }));
+        if (stageHits.length) {
+          setFills((f) => f.map((v, i) => (stageHits.includes(i) ? Math.min(1, v + 0.22) : Math.max(0, v - 0.005))));
+        } else {
+          setFills((f) => f.map((v) => Math.max(0, v - 0.004)));
+        }
+        if (clearedAdd || stalledAdd) {
+          setHud((h) => {
+            const combo = clearedAdd ? h.combo + clearedAdd : 0;
+            return {
+              cleared: h.cleared + clearedAdd,
+              recovered: h.recovered + recoveredAdd,
+              combo,
+              best: Math.max(h.best, combo),
+            };
+          });
         }
         return next;
       });
-      rafRef.current = requestAnimationFrame(tick);
+      raf = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [active]);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [active, lift]);
 
-  const laneH = 30;
-  const laneArr = Array.from({ length: lanes });
+  useEffect(() => {
+    if (!bursts.length) return;
+    const t = setTimeout(() => setBursts((b) => b.slice(1)), 900);
+    return () => clearTimeout(t);
+  }, [bursts]);
+
+  const stageX = STAGES.map((_, i) => 8 + (i * 84) / (STAGES.length - 1));
 
   return (
     <div className="relative px-4 pb-4 pt-3">
-      {/* HUD */}
       <div className="mb-3 grid grid-cols-3 gap-2">
-        <HudStat label="Paid" value={hud.paid.toString()} tone="paid" />
+        <HudStat label="Cleared" value={hud.cleared.toString()} tone="paid" />
         <HudStat label="Recovered" value={fmtCompact(hud.recovered)} tone="paid" />
-        <HudStat label="Combo" value={`x${hud.combo}`} tone={hud.combo >= 3 ? "fire" : "muted"} />
+        <HudStat
+          label={hud.combo >= 3 ? "On fire" : "Combo"}
+          value={`x${hud.combo}`}
+          tone={hud.combo >= 3 ? "fire" : "muted"}
+        />
       </div>
 
       <div
-        className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-black/40 to-black/10"
-        style={{ height: laneH * lanes + 24 }}
+        className="relative overflow-hidden rounded-xl border border-white/10 bg-[radial-gradient(ellipse_at_top,oklch(0.22_0.06_265/0.6),oklch(0.12_0.04_265/0.4))]"
+        style={{ height: 230 }}
       >
-        {/* Late zone */}
-        <div className="pointer-events-none absolute inset-y-0 left-[55%] right-[18%] bg-[oklch(0.55_0.22_25/0.12)]">
-          <div className="absolute inset-0 [background:repeating-linear-gradient(45deg,rgba(255,255,255,0.04)_0_6px,transparent_6px_12px)]" />
-          <span className="absolute left-2 top-1 text-[9px] font-bold uppercase tracking-[0.2em] text-rose-200/70">
-            Late zone
-          </span>
-        </div>
-        {/* Goal */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-[18%] bg-gradient-to-l from-[oklch(0.78_0.16_250/0.25)] to-transparent">
-          <span className="absolute right-2 top-1 text-[9px] font-bold uppercase tracking-[0.2em] text-sky-200/80">
-            Paid ✓
-          </span>
-        </div>
+        <svg aria-hidden className="absolute inset-0 h-full w-full opacity-[0.08]">
+          <defs>
+            <pattern id="quest-hex" width="22" height="20" patternUnits="userSpaceOnUse">
+              <path d="M11 0 L22 5 L22 15 L11 20 L0 15 L0 5 Z" fill="none" stroke="white" strokeWidth="0.4" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#quest-hex)" />
+        </svg>
 
-        {/* lanes */}
-        {laneArr.map((_, i) => (
-          <div
-            key={i}
-            className="absolute left-0 right-0 border-t border-dashed border-white/[0.06]"
-            style={{ top: 12 + i * laneH + laneH }}
+        <svg aria-hidden className="absolute inset-0 h-full w-full">
+          <defs>
+            <linearGradient id="quest-path" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" stopColor="oklch(0.78 0.16 220)" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="oklch(0.82 0.18 145)" stopOpacity="0.7" />
+            </linearGradient>
+          </defs>
+          <line
+            x1={`${stageX[0]}%`} y1="50%" x2={`${stageX[stageX.length - 1]}%`} y2="50%"
+            stroke="url(#quest-path)" strokeWidth="2" strokeDasharray="4 6"
           />
-        ))}
+        </svg>
 
-        {/* chips */}
-        {chips.map((c) => {
-          const top = 12 + c.lane * laneH + 4;
-          const left = `calc(${c.progress * 100}% - 50px)`;
-          const isStuck = c.status === "stuck";
-          const isPaid = c.status === "paid";
+        {STAGES.map((s, i) => {
+          const isFinal = i === STAGES.length - 1;
+          const fill = fills[i] ?? 0;
           return (
-            <motion.div
-              key={c.id}
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={{
-                opacity: 1,
-                scale: isPaid ? 1.08 : 1,
-              }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className={`absolute flex h-[22px] items-center gap-1 rounded-full px-2 text-[10px] font-semibold tabular-nums shadow-md ring-1 backdrop-blur ${
-                isPaid
-                  ? "bg-emerald-400/90 text-emerald-950 ring-emerald-200/60 shadow-[0_0_14px_rgba(80,255,180,0.55)]"
-                  : isStuck
-                    ? "bg-rose-500/85 text-white ring-rose-200/40 animate-pulse"
-                    : "bg-white/90 text-[oklch(0.18_0.04_265)] ring-white/40"
-              }`}
-              style={{ top, left, width: 100 }}
+            <div
+              key={s.key}
+              className="absolute -translate-x-1/2 -translate-y-1/2 text-center"
+              style={{ left: `${stageX[i]}%`, top: "50%" }}
             >
-              <span className="truncate">{c.client.split(" ")[0]}</span>
-              <span className="ml-auto">{fmtCompact(c.amount)}</span>
-              {isPaid && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: [0, 1.6, 0] }}
-                  transition={{ duration: 0.7 }}
-                  className="absolute -top-2 left-1/2 -translate-x-1/2 text-emerald-200"
-                  aria-hidden
-                >
-                  +{fmtCompact(c.amount)}
-                </motion.span>
-              )}
-            </motion.div>
+              <motion.div
+                animate={fill > 0.1 ? { scale: [1, 1.12, 1] } : { scale: 1 }}
+                transition={{ duration: 0.4 }}
+                className={`relative flex h-12 w-12 items-center justify-center rounded-2xl border text-base font-bold ${
+                  isFinal
+                    ? "border-emerald-300/50 bg-gradient-to-br from-emerald-400/30 to-emerald-600/20 text-emerald-100 shadow-[0_0_22px_rgba(80,255,180,0.35)]"
+                    : "border-white/15 bg-white/[0.06] text-white/85 backdrop-blur"
+                }`}
+              >
+                <span aria-hidden>{s.icon}</span>
+                <svg className="pointer-events-none absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 40 40">
+                  <circle cx="20" cy="20" r="18" stroke="white" strokeOpacity="0.08" strokeWidth="2" fill="none" />
+                  <motion.circle
+                    cx="20" cy="20" r="18" fill="none"
+                    stroke={isFinal ? "oklch(0.85 0.18 145)" : "oklch(0.82 0.16 230)"}
+                    strokeWidth="2" strokeLinecap="round"
+                    strokeDasharray={2 * Math.PI * 18}
+                    animate={{ strokeDashoffset: 2 * Math.PI * 18 * (1 - fill) }}
+                    transition={{ duration: 0.4 }}
+                  />
+                </svg>
+              </motion.div>
+              <p className="mt-1.5 text-[9px] font-bold uppercase tracking-[0.16em] text-white/55">
+                {s.label}
+              </p>
+            </div>
           );
         })}
 
-        {/* finish line */}
-        <div className="pointer-events-none absolute bottom-0 right-[18%] top-0 w-px bg-gradient-to-b from-transparent via-sky-300/60 to-transparent" />
+        <AnimatePresence>
+          {tokens.map((tok) => {
+            const x = stageX[tok.stage];
+            const y = 50 + (tok.lane - 1) * 14;
+            const cleared = tok.status === "cleared";
+            const stalled = tok.status === "stalled";
+            return (
+              <motion.div
+                key={tok.id}
+                initial={{ opacity: 0, scale: 0.4, left: `${stageX[0]}%`, top: `${y}%` }}
+                animate={{
+                  opacity: cleared ? 0 : 1,
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  scale: cleared ? 1.6 : stalled ? 0.92 : 1,
+                  rotate: stalled ? [-3, 3, -3] : 0,
+                }}
+                exit={{ opacity: 0, scale: 0.3 }}
+                transition={{
+                  left: { type: "spring", stiffness: 240, damping: 18 },
+                  top: { type: "spring", stiffness: 240, damping: 18 },
+                  scale: { duration: 0.4 },
+                  rotate: { duration: 0.6, repeat: stalled ? Infinity : 0 },
+                }}
+                className={`absolute z-10 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-2 py-1 text-[10px] font-semibold tabular-nums shadow-lg ring-1 ${
+                  stalled
+                    ? "bg-rose-500/90 text-white ring-rose-200/40"
+                    : "bg-white/95 text-[oklch(0.18_0.04_265)] ring-white/40 shadow-[0_4px_18px_rgba(120,160,255,0.35)]"
+                }`}
+              >
+                <span className="mr-1">{tok.client.split(" ")[0]}</span>
+                <span className="opacity-60">·</span>
+                <span className="ml-1">{fmtCompact(tok.amount)}</span>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {bursts.map((b) => (
+            <motion.div
+              key={b.id}
+              initial={{ opacity: 0, scale: 0.3, y: 0 }}
+              animate={{ opacity: [0, 1, 0], scale: [0.3, 1.4, 1], y: -28 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+              className="pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/95 px-2.5 py-1 text-[11px] font-bold text-emerald-950 shadow-[0_0_20px_rgba(80,255,180,0.7)]"
+              style={{ left: `${b.x}%`, top: `${b.y}%` }}
+            >
+              +{fmtCompact(b.amount)}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {hud.combo >= 3 && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute right-3 top-2 rounded-full border border-amber-300/40 bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-amber-200 shadow-[0_0_18px_rgba(255,200,80,0.35)]"
+          >
+            🔥 x{hud.combo} streak
+          </motion.div>
+        )}
       </div>
 
       <p className="mt-2 text-[10px] text-white/40">
-        Higher Recovery score = more invoices break through the late zone.
+        Each token is an invoice hopping milestones. Higher Recovery score = more tokens reach <span className="text-emerald-200/80">Paid</span>.
       </p>
     </div>
   );
