@@ -3,6 +3,7 @@ import { useRouterState } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
+import { ChatWidget } from "./ChatWidget";
 import { trackPageView } from "@/lib/tracking";
 
 export function MarketingLayout({ children }: { children: React.ReactNode }) {
@@ -33,6 +34,7 @@ export function MarketingLayout({ children }: { children: React.ReactNode }) {
         </motion.main>
       </AnimatePresence>
       <SiteFooter />
+      <ChatWidget />
     </div>
   );
 }
