@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
-import { LegalDialog } from "./LegalDialog";
 
 export function SiteFooter() {
   return (
@@ -34,16 +33,17 @@ export function SiteFooter() {
         <div>
           <h4 className="text-eyebrow mb-4">Legal</h4>
           <ul className="space-y-2.5 text-sm">
-            <li><LegalDialog kind="legal"><button className="text-muted-foreground transition-colors hover:text-foreground">Legal</button></LegalDialog></li>
-            <li><LegalDialog kind="privacy"><button className="text-muted-foreground transition-colors hover:text-foreground">Privacy</button></LegalDialog></li>
-            <li><LegalDialog kind="terms"><button className="text-muted-foreground transition-colors hover:text-foreground">Terms</button></LegalDialog></li>
-            <li><LegalDialog kind="dpa"><button className="text-muted-foreground transition-colors hover:text-foreground">DPA</button></LegalDialog></li>
+            <li><Link to="/legal" className="text-muted-foreground transition-colors hover:text-foreground">Legal</Link></li>
+            <li><Link to="/privacy" className="text-muted-foreground transition-colors hover:text-foreground">Privacy</Link></li>
+            <li><Link to="/terms" className="text-muted-foreground transition-colors hover:text-foreground">Terms</Link></li>
+            <li><Link to="/refund" className="text-muted-foreground transition-colors hover:text-foreground">Refund</Link></li>
+            <li><Link to="/dpa" className="text-muted-foreground transition-colors hover:text-foreground">DPA</Link></li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border">
         <div className="container-page flex flex-col items-center justify-between gap-3 py-6 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} Boost Profits, Inc. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} BoostProfits. All rights reserved.</p>
           <p>Built for agencies that want to get paid on time.</p>
         </div>
       </div>
