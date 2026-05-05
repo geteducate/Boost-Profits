@@ -95,8 +95,18 @@ export function AppShell({ children, title, subtitle, actions }: { children: Rea
               {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
             </div>
           )}
-          {children}
+          {checking && session ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Checking subscription…</div>
+          ) : gated ? (
+            <div className="card-premium mx-auto max-w-xl p-8 text-center">
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-cta/10 text-cta"><Lock className="h-5 w-5" /></span>
+              <h2 className="mt-4 text-xl font-bold">Pick a plan to unlock the app</h2>
+              <p className="mt-2 text-sm text-muted-foreground">Your subscription is required to access dashboards, invoices, and automations.</p>
+              <Link to="/pricing" className="mt-5 inline-flex items-center justify-center rounded-lg bg-cta px-4 py-2 text-sm font-semibold text-primary-foreground">View plans</Link>
+            </div>
+          ) : children}
         </main>
+      </div>
       </div>
     </div>
   );
