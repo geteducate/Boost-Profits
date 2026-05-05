@@ -23,14 +23,40 @@ const items = [
 
 export function AppShell({ children, title, subtitle, actions }: { children: ReactNode; title?: string; subtitle?: string; actions?: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const search = useRouterState({ select: (s) => s.location.search });
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const { session, loading: sessionLoading } = useSession();
-  const { isActive, loading: subLoading } = useSubscription();
+  const { subscription, isActive, loading: subLoading } = useSubscription();
   const checking = sessionLoading || subLoading;
   const gated = !!session && !checking && !isActive;
+  const pastDue = subscription?.status === "past_due";
+  const trialing = subscription?.status === "trialing";
+  const trialDaysLeft = trialing && subscription?.current_period_end
+    ? Math.max(0, Math.ceil((new Date(subscription.current_period_end).getTime() - Date.now()) / 86400000))
+    : null;
+
+  useEffect(() => {
+    const params = new URLSearchParams(typeof search === "string" ? search : "");
+    if (params.get("checkout") === "success") {
+      toast.success("Subscription activated! Welcome aboard 🎉");
+      params.delete("checkout");
+      navigate({ to: path, search: Object.fromEntries(params), replace: true });
+    }
+  }, [search, path, navigate]);
+
+  const userName = session?.user?.user_metadata?.display_name || session?.user?.email?.split("@")[0] || "Account";
+  const initials = userName.slice(0, 2).toUpperCase();
+
   return (
     <div className="flex min-h-screen flex-col bg-surface">
       <PaymentTestModeBanner />
+      {pastDue && (
+        <div className="w-full bg-destructive/10 border-b border-destructive/30 px-4 py-2 text-center text-sm text-destructive">
+          <AlertTriangle className="inline h-4 w-4 mr-1.5 -mt-0.5" />
+          Your last payment failed. <Link to="/app/settings" className="underline font-semibold">Update payment method</Link>
+        </div>
+      )}
       <div className="flex flex-1 min-h-0">
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-border bg-sidebar transition-transform lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
