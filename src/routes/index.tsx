@@ -11,6 +11,7 @@ import { Section } from "@/components/Section";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/Reveal";
 import { WorkflowLoop } from "@/components/WorkflowLoop";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -106,11 +107,11 @@ function Hero() {
 /* ─────────────────────────  SOCIAL PROOF  ───────────────────────── */
 
 function SocialProof() {
-  const stats = [
-    { v: "200+", l: "Agencies in early access" },
-    { v: "$1.4M+", l: "Invoices processed in beta" },
-    { v: "4.9 / 5", l: "Average customer rating" },
-    { v: "< 15 min", l: "Average time to live" },
+  const stats: { v: React.ReactNode; l: string }[] = [
+    { v: <><AnimatedCounter value={200} />+</>, l: "Agencies in early access" },
+    { v: <><AnimatedCounter value={1.4} decimals={1} prefix="$" />M+ </>, l: "Invoices processed in beta" },
+    { v: <><AnimatedCounter value={4.9} decimals={1} /> / 5</>, l: "Average customer rating" },
+    { v: <>&lt; <AnimatedCounter value={15} /> min</>, l: "Average time to live" },
   ];
   return (
     <section className="border-y border-border bg-background py-10">
@@ -119,8 +120,8 @@ function SocialProof() {
           Trusted by independent agencies, studios and service teams worldwide
         </p>
         <div className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-4">
-          {stats.map((s) => (
-            <div key={s.l} className="text-center">
+          {stats.map((s, i) => (
+            <div key={i} className="text-center">
               <p className="text-2xl font-extrabold tracking-tight text-foreground">{s.v}</p>
               <p className="mt-1 text-xs text-muted-foreground">{s.l}</p>
             </div>
@@ -299,11 +300,11 @@ function Proof() {
         </div>
         <div className="grid gap-4 lg:col-span-2">
           {[
-            { v: "$18.6k", l: "Average recovered per agency / quarter" },
-            { v: "6 hrs", l: "Saved per week on payment chasing" },
-            { v: "−42%", l: "Reduction in 30-day overdue invoices" },
-          ].map((s) => (
-            <div key={s.l} className="card-premium p-5">
+            { v: <><AnimatedCounter value={18.6} decimals={1} prefix="$" />k</>, l: "Average recovered per agency / quarter" },
+            { v: <><AnimatedCounter value={6} /> hrs</>, l: "Saved per week on payment chasing" },
+            { v: <>−<AnimatedCounter value={42} />%</>, l: "Reduction in 30-day overdue invoices" },
+          ].map((s, i) => (
+            <div key={i} className="card-premium p-5">
               <p className="text-3xl font-extrabold tracking-tight">{s.v}</p>
               <p className="mt-1 text-sm text-muted-foreground">{s.l}</p>
             </div>
