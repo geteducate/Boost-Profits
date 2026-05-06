@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import HCaptcha from "@hcaptcha/react-hcaptcha";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { getCaptchaSiteKey } from "@/utils/captcha.functions";
 import { ShieldCheck, ShieldAlert, RefreshCw, Loader2 } from "lucide-react";
 
@@ -7,9 +7,10 @@ type Status = "loading" | "ready" | "verified" | "expired" | "error" | "fallback
 
 export function Captcha({ onVerify }: { onVerify: (token: string | null) => void }) {
   const [siteKey, setSiteKey] = useState<string | null>(null);
+  const [isTestKey, setIsTestKey] = useState(false);
   const [status, setStatus] = useState<Status>("loading");
   const [message, setMessage] = useState<string>("Loading bot protection…");
-  const ref = useRef<HCaptcha>(null);
+  const ref = useRef<TurnstileInstance | null>(null);
 
   const loadKey = useCallback(() => {
     setStatus("loading");
@@ -18,8 +19,9 @@ export function Captcha({ onVerify }: { onVerify: (token: string | null) => void
       .then((r: any) => {
         if (r?.siteKey) {
           setSiteKey(r.siteKey);
+          setIsTestKey(!!r.isTestKey);
           setStatus("ready");
-          setMessage(r.isTestKey ? "Test mode — verify to continue." : "Verify you're human to continue.");
+          setMessage(r.isTestKey ? "Test mode — verify to continue." : "Verifying you're human…");
         } else {
           setSiteKey(null);
           setStatus("fallback");
@@ -45,11 +47,11 @@ export function Captcha({ onVerify }: { onVerify: (token: string | null) => void
 
   const reset = () => {
     try {
-      ref.current?.resetCaptcha();
+      ref.current?.reset();
     } catch {}
     onVerify(null);
     setStatus("ready");
-    setMessage("Verify you're human to continue.");
+    setMessage("Verifying you're human…");
   };
 
   if (!siteKey) {
@@ -73,42 +75,38 @@ export function Captcha({ onVerify }: { onVerify: (token: string | null) => void
     <div className="w-full space-y-2">
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          {status === "verified" ? (
-            <ShieldCheck className="h-3.5 w-3.5 text-success" />
-          ) : (
-            <ShieldCheck className="h-3.5 w-3.5" />
-          )}
+          <ShieldCheck className={`h-3.5 w-3.5 ${status === "verified" ? "text-success" : ""}`} />
           {status === "verified" ? "Verified" : message}
         </span>
         <button type="button" onClick={reset} className="inline-flex items-center gap-1 hover:text-foreground">
           <RefreshCw className="h-3 w-3" /> Reset
         </button>
       </div>
-      <div className="origin-top-left">
-        <HCaptcha
-          ref={ref}
-          sitekey={siteKey}
-          onVerify={(t) => {
-            onVerify(t);
-            setStatus("verified");
-            setMessage("Verified");
-          }}
-          onExpire={() => {
-            onVerify(null);
-            setStatus("expired");
-            setMessage("Verification expired — please retry.");
-            try { ref.current?.resetCaptcha(); } catch {}
-          }}
-          onError={(err) => {
-            console.warn("[hcaptcha] error", err);
-            onVerify(null);
-            setStatus("error");
-            setMessage("Verification failed — please retry.");
-            try { ref.current?.resetCaptcha(); } catch {}
-          }}
-          onClose={() => onVerify(null)}
-        />
-      </div>
+      <Turnstile
+        ref={ref}
+        siteKey={siteKey}
+        options={{ theme: "auto", size: "flexible" }}
+        onSuccess={(t) => {
+          onVerify(t);
+          setStatus("verified");
+          setMessage("Verified");
+        }}
+        onExpire={() => {
+          onVerify(null);
+          setStatus("expired");
+          setMessage("Verification expired — please retry.");
+          try { ref.current?.reset(); } catch {}
+        }}
+        onError={(err) => {
+          console.warn("[turnstile] error", err);
+          onVerify(null);
+          setStatus("error");
+          setMessage("Verification failed — please retry.");
+        }}
+      />
+      {isTestKey && (
+        <p className="text-[10px] text-muted-foreground/70">Preview test key in use.</p>
+      )}
     </div>
   );
 }
