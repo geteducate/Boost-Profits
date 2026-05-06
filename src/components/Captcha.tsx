@@ -93,11 +93,14 @@ export function Captcha({ onVerify }: { onVerify: (token: string | null) => void
             onVerify(null);
             setStatus("expired");
             setMessage("Verification expired — please retry.");
+            try { ref.current?.resetCaptcha(); } catch {}
           }}
-          onError={() => {
+          onError={(err) => {
+            console.warn("[hcaptcha] error", err);
             onVerify(null);
             setStatus("error");
             setMessage("Verification failed — please retry.");
+            try { ref.current?.resetCaptcha(); } catch {}
           }}
           onClose={() => onVerify(null)}
         />
