@@ -25,6 +25,7 @@ export const Route = createFileRoute("/contact")({
 
 function ContactPage() {
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   return (
     <MarketingLayout>
       <section className="bg-hero">
@@ -58,19 +59,31 @@ function ContactPage() {
             className="card-premium p-7 lg:col-span-3"
             onSubmit={async (e) => {
               e.preventDefault();
+              if (!captchaToken) {
+                toast.error("Please complete the captcha");
+                return;
+              }
               const fd = new FormData(e.target as HTMLFormElement);
               setLoading(true);
-              const { error } = await supabase.from("leads").insert({
-                kind: "contact",
-                name: String(fd.get("name") || ""),
-                email: String(fd.get("email") || ""),
-                company: String(fd.get("company") || "") || null,
-                message: String(fd.get("msg") || ""),
-              });
-              setLoading(false);
-              if (error) { toast.error("Couldn't send — try again"); return; }
-              toast.success("Thanks — we'll be in touch within one business day.");
-              (e.target as HTMLFormElement).reset();
+              try {
+                await submitLead({
+                  data: {
+                    kind: "contact",
+                    name: String(fd.get("name") || ""),
+                    email: String(fd.get("email") || ""),
+                    company: String(fd.get("company") || "") || null,
+                    message: String(fd.get("msg") || ""),
+                    captchaToken,
+                  },
+                });
+                toast.success("Thanks — we'll be in touch within one business day.");
+                (e.target as HTMLFormElement).reset();
+                setCaptchaToken(null);
+              } catch (err) {
+                toast.error("Couldn't send — try again");
+              } finally {
+                setLoading(false);
+              }
             }}
           >
             <div className="grid gap-4 sm:grid-cols-2">
@@ -83,7 +96,10 @@ function ContactPage() {
               <Label htmlFor="msg">How can we help?</Label>
               <Textarea id="msg" required rows={5} className="mt-1.5" placeholder="Tell us about your billing workflow..." />
             </div>
-            <Button type="submit" disabled={loading} className="mt-6 h-11 w-full bg-cta text-primary-foreground sm:w-auto sm:px-6">
+            <div className="mt-4">
+              <Captcha onVerify={setCaptchaToken} />
+            </div>
+            <Button type="submit" disabled={loading || !captchaToken} className="mt-6 h-11 w-full bg-cta text-primary-foreground sm:w-auto sm:px-6">
               {loading ? "Sending..." : (<>Send message <Send className="ml-1.5 h-4 w-4" /></>)}
             </Button>
           </form>
