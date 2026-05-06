@@ -253,9 +253,9 @@ function Features() {
   ];
   return (
     <Section eyebrow="Features" title="Everything you need. Nothing you don't." description="A real revenue operating system — compact, credible, and premium in the details.">
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <Stagger className="grid gap-5 md:grid-cols-2 lg:grid-cols-3" step={80}>
         {groups.map((g) => (
-          <div key={g.cat} className="card-premium lift p-6">
+          <div key={g.cat} className="card-premium lift p-6 h-full">
             <div className="flex items-center justify-between">
               <span className="text-eyebrow">{g.cat}</span>
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-cta text-primary-foreground shadow-elegant">
@@ -272,7 +272,7 @@ function Features() {
             </ul>
           </div>
         ))}
-      </div>
+      </Stagger>
     </Section>
   );
 }
