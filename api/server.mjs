@@ -33,4 +33,4 @@ export default async function (req, res) {
   res.end();
 }
 
-export const config = { runtime: "nodejs20.x" };
+// Runtime defaults to Vercel's Node.js runtime (configured at the project level).
