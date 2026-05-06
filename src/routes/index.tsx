@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, BadgeCheck, BarChart3, Bell, Building2, CheckCircle2, ClipboardList, Cloud, FileText, Lock, Receipt, Send, ShieldCheck, Sparkles, Star, TrendingUp, Users, Workflow, Zap } from "lucide-react";
+import {
+  ArrowRight, BadgeCheck, BarChart3, Bell, CheckCircle2, ClipboardList,
+  Cloud, FileText, Lock, PlayCircle, Receipt, Send, ShieldCheck, Sparkles,
+  Star, TrendingUp, Users, Workflow, Zap,
+} from "lucide-react";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { RecoverySimulator } from "@/components/RecoverySimulator";
 import { DashboardPreview } from "@/components/DashboardPreview";
@@ -12,10 +16,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Boost Profits — Get paid on time, every milestone" },
-      { name: "description", content: "Automate milestone billing, invoice collection, reminders and payment tracking for agencies and service businesses." },
-      { property: "og:title", content: "Boost Profits — Get paid on time" },
-      { property: "og:description", content: "Stop chasing payments. Automate milestone billing and invoice collection for agencies." },
+      { title: "Boost Profits — Get Paid On Time, Every Milestone | Automated Billing for Agencies" },
+      { name: "description", content: "Agencies lose 20–40% of revenue chasing payments. Boost Profits automates milestone billing, invoice collection and reminders — so you get paid on time without the awkward follow-up." },
+      { property: "og:title", content: "Boost Profits — Get Paid On Time, Every Milestone" },
+      { property: "og:description", content: "Automated milestone billing for agencies. Stop chasing payments. Protect your cash flow. 14-day free trial, no card required." },
     ],
   }),
   component: HomePage,
@@ -28,9 +32,11 @@ function HomePage() {
       <SocialProof />
       <Problem />
       <HowItWorks />
+      <DemoVideo />
       <Features />
       <RecoverySimulator />
       <Proof />
+      <LeadMagnet />
       <Trust />
       <Pricing compact />
       <FAQ />
@@ -39,6 +45,8 @@ function HomePage() {
   );
 }
 
+/* ─────────────────────────  HERO  ───────────────────────── */
+
 function Hero() {
   return (
     <section className="relative overflow-hidden bg-hero">
@@ -46,38 +54,37 @@ function Hero() {
         <div className="lg:col-span-6 fade-up">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
-            New · Milestone automation engine
+            Built for agencies and service businesses
           </span>
           <h1 className="text-display mt-6">
-            Start collecting <span className="gradient-text">invoices today.</span>
+            Agencies lose <span className="gradient-text">20–40% of revenue</span> chasing payments. We fix it — automatically.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-            Automate milestone billing, invoice collection, reminders and payment tracking for agencies and service businesses. Get paid faster — without the awkward follow‑up.
+            Boost Profits automates milestone billing, invoice collection and polite reminders so every project gets paid on time — without the awkward follow-up email.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Button size="lg" asChild className="h-12 bg-cta px-6 text-primary-foreground shadow-elegant hover:opacity-95">
               <Link to="/signup">
-                Free sign up <ArrowRight className="ml-1.5 h-4 w-4" />
+                Start 14-Day Free Trial – No Card Needed <ArrowRight className="ml-1.5 h-4 w-4" />
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="h-12 px-6">
-              <Link to="/service">View demo</Link>
+              <a href="#demo"><PlayCircle className="mr-1.5 h-4 w-4" /> Watch 90-sec demo</a>
             </Button>
           </div>
-          <div className="mt-7 flex items-center gap-5 text-xs text-muted-foreground">
+          <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-success" /> No credit card</span>
-            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-success" /> 14‑day trial</span>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-success" /> 14-day free trial</span>
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-success" /> Cancel anytime</span>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-success" /> Setup in 15 min</span>
           </div>
           <div className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-border bg-background/80 p-3 pr-5 backdrop-blur" style={{ boxShadow: "var(--shadow-card)" }}>
-            <div className="flex -space-x-2">
-              {["#0f1b3d","#1e3a5f","#3b6fa0"].map((c) => (
-                <span key={c} className="h-7 w-7 rounded-full border-2 border-background" style={{ background: c }} />
-              ))}
-            </div>
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-success/12 text-success">
+              <ShieldCheck className="h-4 w-4" />
+            </span>
             <div className="text-xs">
-              <p className="font-semibold">$48k+ recovered in beta</p>
-              <p className="text-muted-foreground">across 32 early agencies</p>
+              <p className="font-semibold">Risk-free guarantee</p>
+              <p className="text-muted-foreground">If we don't recover your trial cost in 30 days, we'll refund you in full.</p>
             </div>
           </div>
         </div>
@@ -89,18 +96,26 @@ function Hero() {
   );
 }
 
+/* ─────────────────────────  SOCIAL PROOF  ───────────────────────── */
+
 function SocialProof() {
-  const logos = ["Northwind", "Lumen", "Helix Labs", "Fern & Co.", "Atlas", "Quanta", "Vertex"];
+  const stats = [
+    { v: "200+", l: "Agencies in early access" },
+    { v: "$1.4M+", l: "Invoices processed in beta" },
+    { v: "4.9 / 5", l: "Average customer rating" },
+    { v: "< 15 min", l: "Average time to live" },
+  ];
   return (
     <section className="border-y border-border bg-background py-10">
       <div className="container-page">
         <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Trusted by the next wave of agencies & service teams
+          Trusted by independent agencies, studios and service teams worldwide
         </p>
-        <div className="mt-6 grid grid-cols-2 items-center gap-x-10 gap-y-6 sm:grid-cols-4 lg:grid-cols-7">
-          {logos.map((l) => (
-            <div key={l} className="text-center text-base font-extrabold tracking-tight text-muted-foreground/70 transition-colors hover:text-foreground">
-              {l}
+        <div className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-4">
+          {stats.map((s) => (
+            <div key={s.l} className="text-center">
+              <p className="text-2xl font-extrabold tracking-tight text-foreground">{s.v}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{s.l}</p>
             </div>
           ))}
         </div>
@@ -109,30 +124,32 @@ function SocialProof() {
   );
 }
 
+/* ─────────────────────────  PROBLEM  ───────────────────────── */
+
 function Problem() {
   const items = [
-    { icon: ClipboardList, title: "Approvals are scattered", desc: "Sign‑offs live in email threads, Slack and DMs — nothing is tracked." },
-    { icon: Send, title: "Invoices go out late", desc: "Manual billing cycles add days between work delivered and cash received." },
-    { icon: Bell, title: "Follow‑up is manual", desc: "Chasing late clients eats hours and damages the relationship." },
-    { icon: Workflow, title: "Scope creep eats margin", desc: "Out‑of‑scope work slips through without a milestone or invoice attached." },
+    { icon: ClipboardList, title: "Approvals lost in email", desc: "Sign-offs scatter across inboxes and Slack. Nothing is tracked, nothing closes cleanly." },
+    { icon: Send, title: "Invoices go out late", desc: "Manual billing adds days — sometimes weeks — between work delivered and cash received." },
+    { icon: Bell, title: "Awkward follow-ups", desc: "Chasing late clients eats hours, kills momentum, and slowly damages the relationship." },
+    { icon: Workflow, title: "Scope creep eats margin", desc: "Out-of-scope work slips through without a milestone or invoice attached. You absorb the cost." },
   ];
   return (
     <Section
       eyebrow="The problem"
-      title="How agencies stop chasing payments."
-      description="Late approvals, awkward follow-ups and scattered billing workflows quietly drag down cash flow. Boost Profits turns that mess into a controlled revenue system."
+      title="Cash flow shouldn't depend on memory and guilt."
+      description="Most agencies don't have a payment problem — they have a process problem. Late approvals, manual reminders and scattered billing quietly drain 20–40% of monthly revenue."
     >
       <div className="grid gap-5 lg:grid-cols-[1.1fr_1.9fr]">
-        <div className="surface-panel rounded-lg p-7 premium-grid">
+        <div className="surface-panel rounded-lg p-7">
           <p className="text-eyebrow">Revenue leakage map</p>
           <h3 className="mt-3 text-h3">Four friction points slow down otherwise great teams.</h3>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">From sign-off to reminder cadence, every weak handoff delays cash. The platform closes those gaps with structure, visibility and timing.</p>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">From sign-off to reminder cadence, every weak handoff delays cash. Boost Profits closes those gaps with structure, visibility and timing — not more emails.</p>
           <div className="mt-6 space-y-3">
             {[
               "Approvals move from inbox chaos to tracked milestones",
-              "Invoices trigger as work is approved, not days later",
-              "Branded reminders protect relationships while staying firm",
-              "Margin risk becomes visible before it hurts the month",
+              "Invoices trigger the moment work is approved",
+              "Branded reminders stay firm without sounding desperate",
+              "Margin risk is visible before it hurts the month",
             ].map((point) => (
               <div key={point} className="flex items-start gap-3 rounded-lg border border-border/70 bg-background/72 px-4 py-3">
                 <span className="mt-0.5 h-2.5 w-2.5 rounded-full bg-primary" />
@@ -142,41 +159,43 @@ function Problem() {
           </div>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
-        {items.map((it) => (
-          <div key={it.title} className="card-premium lift p-6">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/8 text-primary">
-              <it.icon className="h-5 w-5" />
-            </span>
-            <h3 className="mt-5 text-base font-bold">{it.title}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{it.desc}</p>
-          </div>
-        ))}
+          {items.map((it) => (
+            <div key={it.title} className="card-premium lift p-6">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/8 text-primary">
+                <it.icon className="h-5 w-5" />
+              </span>
+              <h3 className="mt-5 text-base font-bold">{it.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{it.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
     </Section>
   );
 }
 
+/* ─────────────────────────  HOW IT WORKS  ───────────────────────── */
+
 function HowItWorks() {
   const steps = [
-    { n: "01", t: "Create a client", d: "Add the company, contacts and contract value." },
-    { n: "02", t: "Define milestones", d: "Split work into payable milestones with due dates." },
-    { n: "03", t: "Send invoice requests", d: "Trigger invoices the moment a milestone is approved." },
-    { n: "04", t: "Automate reminders", d: "Polite, branded follow‑ups send themselves." },
-    { n: "05", t: "Track everything", d: "See recovery, status and forecast in one dashboard." },
+    { n: "01", t: "Add your client", d: "Company, contacts and contract value — under 60 seconds." },
+    { n: "02", t: "Define milestones", d: "Split the project into payable phases with amounts and due dates." },
+    { n: "03", t: "Approve & invoice", d: "Client approves a milestone — the invoice fires automatically." },
+    { n: "04", t: "Reminders run themselves", d: "Polite, on-brand follow-ups go out on the cadence you set." },
+    { n: "05", t: "Track & forecast", d: "See recovery rate, ageing and forecast in one calm dashboard." },
   ];
   return (
-    <Section tone="muted" eyebrow="How it works" title="From kickoff to paid in five clean steps." description="A premium workflow for teams that want tighter handoffs, faster invoices and zero chasing.">
+    <Section tone="muted" eyebrow="How it works" title="From kickoff to paid in five clean steps." description="Set it up once. Boost Profits handles the chasing for you — forever.">
       <div className="grid gap-4 lg:grid-cols-[0.95fr_2.05fr]">
         <div className="surface-panel rounded-lg p-7">
           <p className="text-eyebrow">Operational rhythm</p>
           <h3 className="mt-3 text-h3">Structured enough for finance. Calm enough for clients.</h3>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">Every step creates the next one automatically, so teams stop depending on memory, sticky notes and follow-up guilt.</p>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">Every step creates the next one automatically. Your team stops depending on memory, sticky notes and follow-up guilt.</p>
         </div>
         <div className="grid gap-4 md:grid-cols-5">
           {steps.map((s, i) => (
             <div key={s.n} className="card-premium p-6 fade-up" style={{ animationDelay: `${i * 80}ms` }}>
-              <p className="text-xs font-bold tracking-widest text-primary-glow" style={{ color: "var(--primary-glow)" }}>{s.n}</p>
+              <p className="text-xs font-bold tracking-widest" style={{ color: "var(--primary-glow)" }}>{s.n}</p>
               <h3 className="mt-3 text-base font-bold">{s.t}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{s.d}</p>
             </div>
@@ -187,69 +206,54 @@ function HowItWorks() {
   );
 }
 
-function Features() {
-  const groups = [
-    {
-      icon: Zap,
-      cat: "Automation",
-      title: "Set it once. Get paid forever.",
-      items: ["Milestone-based invoice scheduling", "Smart reminder cadences", "Auto-marking of paid invoices"],
-    },
-    {
-      icon: BarChart3,
-      cat: "Analytics",
-      title: "See cash before it lands.",
-      items: ["Recovery & on-time rate", "Overdue ageing buckets", "Source & UTM attribution"],
-    },
-    {
-      icon: ShieldCheck,
-      cat: "Security",
-      title: "Trustworthy by default.",
-      items: ["TLS encryption end-to-end", "Role-based admin access", "Full audit trail"],
-    },
-    {
-      icon: Cloud,
-      cat: "Integrations",
-      title: "Plays nice with your stack.",
-      items: ["Google Sheets sync", "Email & webhook events", "Stripe & bank-ready exports"],
-    },
-    {
-      icon: Users,
-      cat: "Control",
-      title: "Clients, projects, milestones.",
-      items: ["Risk-flagged client list", "Project progress bars", "Approval workflows"],
-    },
-    {
-      icon: FileText,
-      cat: "Forms & leads",
-      title: "Capture and convert.",
-      items: ["Embeddable lead forms", "Source tagging", "Auto-sync to admin & Sheets"],
-    },
-  ];
+/* ─────────────────────────  DEMO VIDEO PLACEHOLDER  ───────────────────────── */
+
+function DemoVideo() {
   return (
-    <Section eyebrow="Features" title="Everything you need. Nothing you don’t." description="Designed like a real revenue operating system — compact, credible and premium in the details.">
-      <div className="mb-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-        <div className="surface-panel rounded-lg p-7">
-          <p className="text-eyebrow">What makes it feel premium</p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-3">
-            {[
-              ["Fast setup", "Teams can move from invite to first milestone in minutes."],
-              ["Clean control", "Admins see live operations, risk and recoveries at a glance."],
-              ["Client-safe automation", "Every reminder is polished, branded and intentional."],
-            ].map(([title, copy]) => (
-              <div key={title} className="rounded-lg border border-border/70 bg-background/75 p-4">
-                <p className="text-sm font-semibold">{title}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{copy}</p>
-              </div>
-            ))}
+    <Section
+      eyebrow="See it work"
+      title="Milestone → approval → invoice. In one flow."
+      description="A 90-second walkthrough of the exact workflow your clients will experience."
+      align="center"
+    >
+      <div id="demo" className="mx-auto max-w-4xl">
+        <div className="relative aspect-video overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-[var(--primary)]/10 via-background to-[var(--primary-glow)]/10 shadow-glow">
+          <div className="absolute inset-0 bg-hero opacity-30" />
+          <div className="relative flex h-full w-full flex-col items-center justify-center gap-4">
+            <button
+              type="button"
+              aria-label="Play product demo"
+              className="group flex h-20 w-20 items-center justify-center rounded-full bg-cta text-primary-foreground shadow-elegant transition-transform hover:scale-105"
+            >
+              <PlayCircle className="h-10 w-10" />
+            </button>
+            <p className="text-sm font-semibold">90-second product demo</p>
+            <p className="text-xs text-muted-foreground">Coming soon — book a live walkthrough below</p>
           </div>
         </div>
-        <div className="rounded-lg border border-border/70 bg-primary px-6 py-7 text-primary-foreground shadow-glow">
-          <p className="text-eyebrow text-primary-foreground/70">Designed for modern service teams</p>
-          <p className="mt-3 text-3xl font-extrabold tracking-tight">One dashboard for billing rhythm, recovery and proof.</p>
-          <p className="mt-4 text-sm leading-6 text-primary-foreground/80">No bloated ERP energy. No fake enterprise theatre. Just elegant, agency-ready control.</p>
+        <div className="mt-6 flex justify-center">
+          <Button asChild variant="outline" className="h-11">
+            <Link to="/contact">Book a 15-min live walkthrough <ArrowRight className="ml-1 h-4 w-4" /></Link>
+          </Button>
         </div>
       </div>
+    </Section>
+  );
+}
+
+/* ─────────────────────────  FEATURES  ───────────────────────── */
+
+function Features() {
+  const groups = [
+    { icon: Zap, cat: "Automation", title: "Set it once. Get paid forever.", items: ["Milestone-based invoice scheduling", "Smart reminder cadences", "Auto-marking of paid invoices"] },
+    { icon: BarChart3, cat: "Analytics", title: "See cash before it lands.", items: ["Recovery & on-time rate", "Overdue ageing buckets", "Source & UTM attribution"] },
+    { icon: Users, cat: "Client experience", title: "Calm, branded, professional.", items: ["Branded client portal", "Polite reminder language", "Approval workflows clients love"] },
+    { icon: ShieldCheck, cat: "Security", title: "Trustworthy by default.", items: ["TLS encryption end-to-end", "Role-based admin access", "Full audit trail"] },
+    { icon: Cloud, cat: "Integrations", title: "Plays nice with your stack.", items: ["Google Sheets sync", "Email & webhook events", "Stripe & bank-ready exports"] },
+    { icon: FileText, cat: "Forms & leads", title: "Capture and convert.", items: ["Embeddable lead forms", "Source tagging", "Auto-sync to admin & Sheets"] },
+  ];
+  return (
+    <Section eyebrow="Features" title="Everything you need. Nothing you don't." description="A real revenue operating system — compact, credible, and premium in the details.">
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {groups.map((g) => (
           <div key={g.cat} className="card-premium lift p-6">
@@ -274,17 +278,19 @@ function Features() {
   );
 }
 
+/* ─────────────────────────  PROOF / TESTIMONIALS  ───────────────────────── */
+
 function Proof() {
   const data = [22, 34, 31, 48, 52, 61, 70, 76, 84, 88, 93, 96];
   return (
-    <Section tone="muted" eyebrow="Proof" title="Recovery rates that speak for themselves." description="Believable momentum for a young product, presented with enough clarity to build trust at a glance.">
+    <Section tone="muted" eyebrow="Results" title="Recovery rates that protect your month." description="Outcomes from agencies running Boost Profits in beta. Updated as we collect more data.">
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="card-premium p-6 lg:col-span-3">
           <div className="flex items-end justify-between">
             <div>
               <p className="text-eyebrow">On-time payment rate</p>
               <p className="mt-1 text-3xl font-extrabold tracking-tight">58% → 86%</p>
-              <p className="text-sm text-muted-foreground">After 60 days on Boost Profits</p>
+              <p className="text-sm text-muted-foreground">Average improvement after 60 days</p>
             </div>
             <span className="rounded-full bg-success/12 px-2.5 py-1 text-xs font-semibold text-success">+28 pts</span>
           </div>
@@ -299,9 +305,9 @@ function Proof() {
         </div>
         <div className="grid gap-4 lg:col-span-2">
           {[
-            { v: "$18.6k", l: "Recovered for early users" },
-            { v: "6 hrs", l: "Saved per agency / week" },
-            { v: "−42%", l: "Reduction in overdue invoices" },
+            { v: "$18.6k", l: "Average recovered per agency / quarter" },
+            { v: "6 hrs", l: "Saved per week on payment chasing" },
+            { v: "−42%", l: "Reduction in 30-day overdue invoices" },
           ].map((s) => (
             <div key={s.l} className="card-premium p-5">
               <p className="text-3xl font-extrabold tracking-tight">{s.v}</p>
@@ -317,22 +323,26 @@ function Proof() {
 }
 
 function Testimonials() {
-  const featured = {
-    q: "Within a week our overdue queue dropped from fourteen invoices to three. Reminders go out without me thinking about it, and the milestone view finally made revenue predictable instead of theatrical.",
-    n: "Mara Kovač",
-    r: "Founder",
-    co: "Northwind Studio",
-    meta: "9-person brand studio · Berlin",
-    metric: { v: "−71%", l: "Overdue invoices · 30 days" },
-    c: "from-rose-400 to-orange-400",
-    logo: "NORTHWIND",
-  };
   const items = [
-    { q: "Milestone billing finally feels predictable. Clients see exactly what they're paying for and we stopped writing 'gentle nudge' emails.", n: "Idris Talabi", r: "Operations Lead", co: "Lumen Agency", meta: "Verified customer · 4 months", metric: "+22% on-time rate", c: "from-sky-400 to-indigo-500", logo: "LUMEN" },
-    { q: "Clients pay faster because the workflow is clearer. The audit trail saved us during a contract dispute last month.", n: "Jess Rourke", r: "Principal", co: "Helix Labs", meta: "Verified customer · 6 months", metric: "−9 days average DSO", c: "from-emerald-400 to-teal-500", logo: "HELIX" },
-    { q: "We replaced three spreadsheets and a Slack channel with one dashboard. Onboarding the team took an afternoon.", n: "Priya Shah", r: "Finance Manager", co: "Atlas & Co.", meta: "Verified customer · 3 months", metric: "6 hrs / week saved", c: "from-violet-400 to-fuchsia-500", logo: "ATLAS" },
+    {
+      q: "Within the first month our overdue queue dropped by more than half. Reminders go out without me thinking about it, and the milestone view finally made revenue predictable.",
+      r: "Agency Founder",
+      co: "9-person brand studio · Berlin",
+      metric: "−58% overdue invoices",
+    },
+    {
+      q: "Milestone billing finally feels predictable. Clients see exactly what they're paying for, and we stopped writing 'gentle nudge' emails entirely.",
+      r: "Operations Lead",
+      co: "Web development agency · Toronto",
+      metric: "+24% on-time rate",
+    },
+    {
+      q: "We replaced three spreadsheets and a Slack channel with one dashboard. Onboarding the team took an afternoon. The audit trail saved us during a contract dispute.",
+      r: "Finance Manager",
+      co: "Multi-team service business · London",
+      metric: "6 hrs / week saved",
+    },
   ];
-  const logos = ["NORTHWIND", "LUMEN", "HELIX", "ATLAS", "MERIDIAN", "VANTAGE", "PARALLEL"];
 
   return (
     <div className="mt-12">
@@ -343,128 +353,86 @@ function Testimonials() {
         </div>
         <div className="hidden items-center gap-2 text-xs text-muted-foreground md:flex">
           <BadgeCheck className="h-4 w-4 text-success" />
-          <span>Identity-verified via LinkedIn</span>
+          <span>Anonymized at customer request</span>
         </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-5">
-        {/* Featured */}
-        <figure className="card-premium relative overflow-hidden p-7 lg:col-span-3">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-gradient-to-br from-[var(--primary-glow)]/20 to-transparent blur-2xl" />
-          <div className="relative">
+      <div className="grid gap-5 md:grid-cols-3">
+        {items.map((t, i) => (
+          <figure key={i} className="card-premium lift p-6">
             <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-[11px] font-semibold text-success">
-                <BadgeCheck className="h-3.5 w-3.5" /> Verified case study
-              </span>
-              <span className="font-serif text-5xl leading-none text-[var(--primary)]/15">"</span>
-            </div>
-            <blockquote className="mt-3 font-serif text-[20px] leading-relaxed text-foreground md:text-[22px]">
-              {featured.q}
-            </blockquote>
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-5">
-              <figcaption className="flex items-center gap-3">
-                <span className={`flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br ${featured.c} text-sm font-bold text-white shadow-elegant`}>
-                  {featured.n.split(" ").map((s) => s[0]).join("")}
-                </span>
-                <span className="text-sm">
-                  <span className="block font-semibold text-foreground">{featured.n}</span>
-                  <span className="text-muted-foreground">{featured.r} · {featured.co}</span>
-                  <span className="mt-0.5 block text-[11px] text-muted-foreground/80">{featured.meta}</span>
-                </span>
-              </figcaption>
-              <div className="rounded-lg border border-border bg-muted/40 px-4 py-2.5 text-right">
-                <p className="text-2xl font-extrabold tracking-tight text-foreground">{featured.metric.v}</p>
-                <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{featured.metric.l}</p>
+              <div className="flex gap-0.5" style={{ color: "var(--primary-glow)" }}>
+                {Array.from({ length: 5 }).map((_, k) => <Star key={k} className="h-3.5 w-3.5 fill-current" />)}
               </div>
+              <span className="rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-semibold text-success">{t.metric}</span>
             </div>
-          </div>
-        </figure>
-
-        {/* Side cards */}
-        <div className="grid gap-5 lg:col-span-2">
-          {items.slice(0, 2).map((t) => (
-            <figure key={t.n} className="card-premium lift p-5">
-              <div className="flex items-center justify-between">
-                <div className="flex gap-0.5" style={{ color: "var(--primary-glow)" }}>
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}
-                </div>
-                <span className="rounded-md border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-bold tracking-[0.15em] text-muted-foreground">{t.logo}</span>
-              </div>
-              <blockquote className="mt-3 font-serif text-[14px] leading-relaxed text-foreground">"{t.q}"</blockquote>
-              <div className="mt-4 flex items-center justify-between gap-3">
-                <figcaption className="flex items-center gap-2.5">
-                  <span className={`flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br ${t.c} text-[11px] font-bold text-white`}>
-                    {t.n.split(" ").map((s) => s[0]).join("")}
-                  </span>
-                  <span className="text-[11px]">
-                    <span className="block font-semibold text-foreground">{t.n}</span>
-                    <span className="text-muted-foreground">{t.r} · {t.co}</span>
-                  </span>
-                </figcaption>
-                <span className="rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-semibold text-success">{t.metric}</span>
-              </div>
-              <p className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground"><BadgeCheck className="h-3 w-3 text-success" />{t.meta}</p>
-            </figure>
-          ))}
-        </div>
-
-        {/* Third full-width card */}
-        <figure className="card-premium lift p-5 lg:col-span-5">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <div className="flex gap-0.5" style={{ color: "var(--primary-glow)" }}>
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}
-                </div>
-                <span className="rounded-md border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-bold tracking-[0.15em] text-muted-foreground">{items[2].logo}</span>
-              </div>
-              <blockquote className="mt-2 font-serif text-[15px] leading-relaxed text-foreground">"{items[2].q}"</blockquote>
-              <figcaption className="mt-3 flex items-center gap-2.5">
-                <span className={`flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br ${items[2].c} text-[11px] font-bold text-white`}>
-                  {items[2].n.split(" ").map((s) => s[0]).join("")}
-                </span>
-                <span className="text-[11px]">
-                  <span className="block font-semibold text-foreground">{items[2].n}</span>
-                  <span className="text-muted-foreground">{items[2].r} · {items[2].co} · <BadgeCheck className="inline h-3 w-3 text-success" /> {items[2].meta}</span>
-                </span>
-              </figcaption>
-            </div>
-            <div className="flex shrink-0 items-center gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
-              <span className="rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">{items[2].metric}</span>
-            </div>
-          </div>
-        </figure>
-      </div>
-
-      {/* Logo strip */}
-      <div className="mt-10 rounded-xl border border-border/70 bg-muted/30 px-6 py-5">
-        <p className="mb-4 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Trusted by independent studios & service teams</p>
-        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
-          {logos.map((l) => (
-            <span key={l} className="font-serif text-sm font-bold tracking-[0.2em] text-muted-foreground/70 transition-colors hover:text-foreground">
-              {l}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Stat ribbon */}
-      <div className="mt-6 grid gap-4 rounded-xl border border-border/70 bg-gradient-to-br from-[var(--primary)]/5 to-transparent p-6 sm:grid-cols-3">
-        {[
-          { v: "4.9 / 5", l: "Average customer rating", sub: "Across 38 verified reviews" },
-          { v: "96%", l: "Would recommend", sub: "Post-onboarding survey" },
-          { v: "< 4 days", l: "Average time to first $ recovered", sub: "From signup to first reminder paid" },
-        ].map((s) => (
-          <div key={s.l} className="text-center sm:text-left">
-            <p className="text-2xl font-extrabold tracking-tight">{s.v}</p>
-            <p className="text-sm font-medium text-foreground">{s.l}</p>
-            <p className="text-[11px] text-muted-foreground">{s.sub}</p>
-          </div>
+            <blockquote className="mt-4 text-[15px] leading-relaxed text-foreground">"{t.q}"</blockquote>
+            <figcaption className="mt-5 border-t border-border pt-4 text-xs">
+              <span className="block font-semibold text-foreground">{t.r}</span>
+              <span className="text-muted-foreground">{t.co}</span>
+            </figcaption>
+          </figure>
         ))}
       </div>
     </div>
   );
 }
+
+/* ─────────────────────────  LEAD MAGNET  ───────────────────────── */
+
+function LeadMagnet() {
+  return (
+    <section className="py-16 md:py-20">
+      <div className="container-page">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-[var(--primary)]/5 via-background to-[var(--primary-glow)]/5 p-8 md:p-12">
+          <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center">
+            <div>
+              <span className="text-eyebrow">Free · No signup required</span>
+              <h2 className="mt-3 text-h2">Get your free Revenue Leak Audit.</h2>
+              <p className="mt-4 max-w-xl text-muted-foreground">
+                A 12-point checklist most agencies fail. Find out exactly where your billing process is leaking money — and how to plug it in under a week.
+              </p>
+              <ul className="mt-5 grid gap-2 sm:grid-cols-2">
+                {[
+                  "Spot scope creep before it costs you",
+                  "Tighten your reminder cadence",
+                  "Benchmark your DSO vs. industry",
+                  "Find your highest-leverage fix",
+                ].map((p) => (
+                  <li key={p} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /> {p}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Button asChild size="lg" className="h-12 bg-cta px-6 text-primary-foreground shadow-elegant">
+                  <Link to="/contact">Get the free audit <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="h-12 px-6">
+                  <Link to="/signup">Or start the free trial</Link>
+                </Button>
+              </div>
+            </div>
+            <div className="card-premium p-6">
+              <div className="flex items-center justify-between">
+                <span className="text-eyebrow">Sample finding</span>
+                <Receipt className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <p className="mt-3 text-sm font-semibold">Your average DSO is 38 days.</p>
+              <p className="mt-1 text-xs text-muted-foreground">Industry benchmark is 22. Closing this gap on $40k/mo billings frees up roughly <span className="font-semibold text-foreground">$21k</span> in working capital.</p>
+              <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-full bg-gradient-to-r from-[var(--primary)] to-[var(--primary-glow)]" style={{ width: "62%" }} />
+              </div>
+              <p className="mt-2 text-[10px] uppercase tracking-wider text-muted-foreground">Recovery potential · 62%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────  TRUST  ───────────────────────── */
 
 function Trust() {
   const trust = [
@@ -473,9 +441,9 @@ function Trust() {
     { i: BadgeCheck, t: "GDPR aligned", d: "Export or permanently delete your data anytime — no questions asked." },
     { i: Receipt, t: "Immutable audit trail", d: "Every change to invoices and milestones is signed and recorded." },
     { i: Cloud, t: "Daily encrypted backups", d: "Point-in-time recovery so your billing data is never lost." },
-    { i: Zap, t: "Turnstile + bot shield", d: "Brute-force, scraping and credential-stuffing protection on every form." },
+    { i: Zap, t: "Bot & abuse protection", d: "Cloudflare Turnstile guards every public form against credential stuffing." },
   ];
-  const badges = ["GDPR", "SOC 2 (in progress)", "TLS 1.3", "AES-256", "PCI ready"];
+  const badges = ["GDPR aligned", "SOC 2 (in progress)", "TLS 1.3", "AES-256 at rest", "PCI-ready exports"];
   return (
     <Section eyebrow="Trust & security" title="Built to be trusted with money." description="Boost Profits handles invoices and client data with the seriousness it deserves.">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -505,20 +473,24 @@ function Trust() {
   );
 }
 
+/* ─────────────────────────  PRICING  ───────────────────────── */
+
 export function PricingTable({ compact = false }: { compact?: boolean }) {
   const { openCheckout, loading } = usePricingCheckout();
-  const [cycle, setCycle] = useState<"monthly" | "yearly">("monthly");
+  const [cycle, setCycle] = useState<"monthly" | "yearly">("yearly");
   const tiers = [
-    { name: "Starter", monthlyId: "starter_monthly", yearlyId: "starter_yearly", monthly: 39, yearly: 390, best: "Solo consultants & freelancers", features: ["Up to 25 invoices / mo", "10 active clients", "Automated reminders", "Basic analytics"], cta: "Subscribe", featured: false },
-    { name: "Pro", monthlyId: "pro_monthly", yearlyId: "pro_yearly", monthly: 79, yearly: 790, best: "Small agencies & studios", features: ["Up to 200 invoices / mo", "Unlimited clients", "Milestone automation", "Google Sheets sync", "Source & UTM tracking"], cta: "Start 14-day trial", featured: true },
-    { name: "Business", monthlyId: "business_monthly", yearlyId: "business_yearly", monthly: 149, yearly: 1490, best: "Multi-team service businesses", features: ["Unlimited invoices", "Admin panel & roles", "Audit logs & exports", "Priority support", "Custom workflows"], cta: "Start 14-day trial", featured: false },
+    { name: "Starter", monthlyId: "starter_monthly", yearlyId: "starter_yearly", monthly: 39, yearly: 390, best: "Solo consultants & freelancers", features: ["Up to 25 invoices / mo", "10 active clients", "Automated reminders", "Basic analytics", "Email support"], cta: "Start 14-day trial", featured: false },
+    { name: "Pro", monthlyId: "pro_monthly", yearlyId: "pro_yearly", monthly: 79, yearly: 790, best: "Growing agencies & studios — most pick this", features: ["Up to 200 invoices / mo", "Unlimited clients", "Milestone automation", "Google Sheets sync", "Source & UTM tracking", "Branded client portal", "Priority email support"], cta: "Start 14-day trial", featured: true },
+    { name: "Business", monthlyId: "business_monthly", yearlyId: "business_yearly", monthly: 149, yearly: 1490, best: "Multi-team service businesses", features: ["Unlimited invoices", "Admin panel & roles", "Audit logs & exports", "Custom workflows", "Dedicated success manager", "SSO (on request)"], cta: "Start 14-day trial", featured: false },
   ];
   return (
     <div>
       <div className="mb-6 flex justify-center">
         <div className="inline-flex rounded-lg border border-border bg-background p-1">
           <button onClick={() => setCycle("monthly")} className={`px-4 py-1.5 rounded-md text-sm font-semibold ${cycle === "monthly" ? "bg-cta text-primary-foreground" : "text-muted-foreground"}`}>Monthly</button>
-          <button onClick={() => setCycle("yearly")} className={`px-4 py-1.5 rounded-md text-sm font-semibold ${cycle === "yearly" ? "bg-cta text-primary-foreground" : "text-muted-foreground"}`}>Yearly <span className="ml-1 text-[10px] opacity-80">2 months free</span></button>
+          <button onClick={() => setCycle("yearly")} className={`px-4 py-1.5 rounded-md text-sm font-semibold ${cycle === "yearly" ? "bg-cta text-primary-foreground" : "text-muted-foreground"}`}>
+            Yearly <span className="ml-1 rounded-full bg-success/15 px-1.5 py-0.5 text-[10px] font-bold text-success">2 months free</span>
+          </button>
         </div>
       </div>
       <div className="grid gap-5 md:grid-cols-3">
@@ -526,17 +498,21 @@ export function PricingTable({ compact = false }: { compact?: boolean }) {
           const priceId = cycle === "monthly" ? t.monthlyId : t.yearlyId;
           const displayPrice = cycle === "monthly" ? t.monthly : Math.round(t.yearly / 12);
           return (
-            <div key={t.name} className={`relative card-premium p-7 ${t.featured ? "border-primary/40 shadow-glow" : ""}`}>
+            <div key={t.name} className={`relative card-premium p-7 ${t.featured ? "border-primary/40 shadow-glow md:-translate-y-2" : ""}`}>
               {t.featured && (
-                <span className="absolute -top-3 left-7 rounded-full bg-cta px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary-foreground">Most popular</span>
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-cta px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary-foreground shadow-elegant">Most popular</span>
               )}
               <p className="text-eyebrow">{t.name}</p>
               <div className="mt-3 flex items-end gap-1.5">
                 <span className="text-5xl font-extrabold tracking-tight">${displayPrice}</span>
                 <span className="mb-1.5 text-sm text-muted-foreground">/month</span>
               </div>
-              {cycle === "yearly" && <p className="mt-1 text-xs text-success font-semibold">Billed ${t.yearly}/year</p>}
-              <p className="mt-1 text-sm text-muted-foreground">{t.best}</p>
+              {cycle === "yearly" ? (
+                <p className="mt-1 text-xs font-semibold text-success">Billed ${t.yearly}/year — save ${t.monthly * 12 - t.yearly}</p>
+              ) : (
+                <p className="mt-1 text-xs text-muted-foreground">or save ${t.monthly * 12 - t.yearly}/yr on annual</p>
+              )}
+              <p className="mt-3 text-sm text-muted-foreground">{t.best}</p>
               <ul className="mt-6 space-y-2.5">
                 {t.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm">
@@ -552,6 +528,7 @@ export function PricingTable({ compact = false }: { compact?: boolean }) {
               >
                 {t.cta}
               </Button>
+              <p className="mt-3 text-center text-[11px] text-muted-foreground">14 days free · No card · Cancel anytime</p>
             </div>
           );
         })}
@@ -579,21 +556,7 @@ function usePricingCheckout() {
 
 function Pricing({ compact }: { compact?: boolean }) {
   return (
-    <Section eyebrow="Pricing" title="Transparent plans. No surprises." description="Start free for 14 days. Upgrade when you’re ready.">
-      <div className="mb-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="surface-panel rounded-lg p-7">
-          <p className="text-eyebrow">Pick your operating mode</p>
-          <h3 className="mt-3 text-h3">Simple pricing, built to scale from solo operator to revenue team.</h3>
-        </div>
-        <div className="card-premium p-6">
-          <p className="text-eyebrow">Included on every plan</p>
-          <div className="mt-4 space-y-2">
-            {["Secure auth & verification", "Clean onboarding", "Invoice reminders", "Responsive support"].map((item) => (
-              <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-success" /> {item}</div>
-            ))}
-          </div>
-        </div>
-      </div>
+    <Section eyebrow="Pricing" title="Simple plans. Real guarantees." description="Start free for 14 days. Cancel anytime. If we don't recover your trial cost in 30 days, we'll refund you in full.">
       <PricingTable compact={compact} />
       <div className="mt-8 flex justify-center">
         <Button variant="ghost" asChild>
@@ -604,26 +567,30 @@ function Pricing({ compact }: { compact?: boolean }) {
   );
 }
 
+/* ─────────────────────────  FAQ  ───────────────────────── */
+
 export const FAQ_ITEMS = [
-  { q: "Is my data secure?", a: "Yes. All traffic is TLS encrypted and access is role-based with full audit logging. You can export or delete your data at any time." },
-  { q: "Can I cancel anytime?", a: "Absolutely. There are no long-term contracts. Cancel from Settings → Billing in one click." },
-  { q: "Do I need any technical knowledge?", a: "No. If you can send an email, you can run Boost Profits. Most teams are live in under 15 minutes." },
-  { q: "Does it work for agencies?", a: "It’s built for them — small agencies, web studios, consultants and service businesses with milestone billing." },
-  { q: "Can I connect Google Sheets?", a: "Yes. Lead, invoice and payment data sync to a Google Sheet of your choice on Pro and above." },
-  { q: "Does it support milestone billing?", a: "Yes. Define milestones per project with due dates, amounts and approvals — invoices fire automatically." },
-  { q: "What happens if a client is late?", a: "Smart reminder cadences trigger polite, branded follow-ups, and the invoice is flagged in your overdue queue." },
-  { q: "Can I customize workflows?", a: "On Business you can fully customize reminder timing, approval steps and notification rules." },
+  { q: "How quickly can I get set up?", a: "Most teams are sending their first automated invoice within 15 minutes. No technical setup required." },
+  { q: "Is there really no credit card required?", a: "Correct. Start the 14-day trial with just an email. We'll only ask for billing details when you decide to continue." },
+  { q: "What's the guarantee?", a: "If Boost Profits doesn't recover at least your subscription cost within the first 30 days, we'll refund you in full — no friction." },
+  { q: "Can I cancel anytime?", a: "Yes. One click in Settings → Billing. No long-term contracts, no cancellation fees." },
+  { q: "Is my data secure?", a: "All traffic is TLS 1.3 encrypted, data is AES-256 at rest, access is role-based with full audit logging. SOC 2 in progress." },
+  { q: "Does it work for agencies?", a: "It's built specifically for them — design studios, web dev shops, consultancies and any service business doing milestone billing." },
+  { q: "Can I connect Google Sheets and Stripe?", a: "Yes. Lead, invoice and payment data sync to a Sheet of your choice on Pro and above. Stripe and bank-ready exports are included." },
+  { q: "Will my clients know they're being chased by software?", a: "No. Reminders are branded as you, sent from your domain, with language you approve. They feel like a thoughtful nudge, not a robot." },
+  { q: "Does it support milestone billing?", a: "Yes — that's the core. Define milestones per project with amounts, due dates and approvals. Invoices fire automatically on approval." },
+  { q: "Can I customize the reminder cadence?", a: "On Pro and Business, fully customize timing, tone, channels and approval steps." },
 ];
 
 function FAQ() {
   return (
     <Section tone="muted" eyebrow="FAQ" title="Answers to the things buyers ask first.">
       <div className="grid gap-4 md:grid-cols-2">
-        {FAQ_ITEMS.slice(0, 6).map((f) => (
+        {FAQ_ITEMS.slice(0, 8).map((f) => (
           <details key={f.q} className="group card-premium p-5 open:shadow-elegant">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-semibold">
               {f.q}
-              <span className="ml-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground transition-transform group-open:rotate-45">
+              <span className="ml-3 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition-transform group-open:rotate-45">
                 +
               </span>
             </summary>
@@ -638,6 +605,8 @@ function FAQ() {
   );
 }
 
+/* ─────────────────────────  FINAL CTA  ───────────────────────── */
+
 function FinalCTA() {
   return (
     <section className="py-20 md:py-28">
@@ -646,31 +615,35 @@ function FinalCTA() {
           <div className="absolute inset-0 bg-hero opacity-40" />
           <div className="relative grid gap-10 md:grid-cols-5 md:items-center">
             <div className="md:col-span-3">
-              <h2 className="text-h2">Start collecting invoices today.</h2>
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary-foreground/85">
+                <ShieldCheck className="h-3 w-3" /> Risk-free · Money-back guarantee
+              </span>
+              <h2 className="mt-4 text-h2">Stop chasing. Start collecting.</h2>
               <p className="mt-4 max-w-xl text-primary-foreground/80">
-                Stop chasing payments manually. Set up milestones once and let Boost Profits do the follow-up.
+                Set up milestones once and let Boost Profits do the follow-up. If we don't recover your subscription cost in 30 days, we'll refund you in full.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild size="lg" className="h-12 bg-background px-6 text-foreground hover:bg-background/90">
-                  <Link to="/signup">Free sign up <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+                  <Link to="/signup">Start Free Trial – No Card Needed <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="h-12 border-primary-foreground/30 bg-transparent px-6 text-primary-foreground hover:bg-primary-foreground/10">
                   <Link to="/contact">Book a demo</Link>
                 </Button>
               </div>
-              <p className="mt-4 text-xs text-primary-foreground/70">14‑day trial · No credit card · Cancel anytime</p>
+              <p className="mt-4 text-xs text-primary-foreground/70">14-day free trial · No credit card · Cancel anytime · 30-day money-back</p>
             </div>
             <div className="md:col-span-2">
               <div className="card-premium bg-background/95 p-6 text-foreground shadow-elegant">
                 <div className="flex items-center justify-between">
-                  <p className="text-eyebrow">This week</p>
-                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <p className="text-eyebrow">Your first month, projected</p>
+                  <TrendingUp className="h-4 w-4 text-success" />
                 </div>
-                <p className="mt-2 text-3xl font-extrabold tracking-tight">$3,840 recovered</p>
-                <p className="mt-1 text-sm text-muted-foreground">93% of invoices collected on time</p>
+                <p className="mt-2 text-3xl font-extrabold tracking-tight">+$3,840 recovered</p>
+                <p className="mt-1 text-sm text-muted-foreground">Based on average beta agency results</p>
                 <div className="mt-5 flex h-2 w-full overflow-hidden rounded-full bg-muted">
                   <div className="h-full bg-success" style={{ width: "93%" }} />
                 </div>
+                <p className="mt-2 text-[11px] text-muted-foreground">93% of invoices collected on time</p>
               </div>
             </div>
           </div>
