@@ -73,26 +73,34 @@ export function AuthShell({ mode }: { mode: "login" | "signup" }) {
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="flex flex-col p-8 md:p-12">
-        <Logo />
-        <div className="flex flex-1 items-center justify-center">
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      <div className="absolute inset-0 bg-hero opacity-40" aria-hidden />
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <header className="container-page flex items-center justify-between py-6">
+          <Logo />
+          <Link to="/" className="text-xs text-muted-foreground hover:text-foreground hover:underline">
+            ← Back to site
+          </Link>
+        </header>
+        <main className="flex flex-1 items-center justify-center px-4 py-10">
           <motion.form
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45 }}
-            className="w-full max-w-sm"
+            className="card-premium w-full max-w-md p-8 md:p-10 shadow-elegant"
             onSubmit={handleSubmit}
           >
-            <h1 className="text-3xl font-extrabold tracking-tight">
-              {mode === "login" ? "Welcome back." : "Create your account."}
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {mode === "login" ? "Sign in to keep your cash flowing." : "Start collecting invoices today."}
-            </p>
+            <div className="text-center">
+              <h1 className="text-3xl font-extrabold tracking-tight">
+                {mode === "login" ? "Welcome back." : "Create your account."}
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {mode === "login" ? "Sign in to keep your cash flowing." : "Start collecting invoices today."}
+              </p>
+            </div>
             {mode === "signup" && (
-              <div className="mt-5 rounded-lg border border-border bg-muted/40 px-4 py-3 text-xs text-muted-foreground">
-                We’ll send a verification email before first access so accounts stay secure and recoverable.
+              <div className="mt-6 rounded-lg border border-border bg-muted/40 px-4 py-3 text-xs text-muted-foreground">
+                We'll send a verification email before first access so accounts stay secure and recoverable.
               </div>
             )}
             <div className="mt-7 space-y-4">
@@ -117,7 +125,7 @@ export function AuthShell({ mode }: { mode: "login" | "signup" }) {
                 </div>
                 <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1.5" placeholder="••••••••" />
               </div>
-              <div className="pt-1">
+              <div className="flex justify-center pt-1">
                 <Captcha onVerify={setCaptchaToken} />
               </div>
             </div>
@@ -139,32 +147,7 @@ export function AuthShell({ mode }: { mode: "login" | "signup" }) {
               </p>
             )}
           </motion.form>
-        </div>
-        <p className="text-xs text-muted-foreground"><Link to="/" className="hover:underline">← Back to site</Link></p>
-      </div>
-      <div className="relative hidden overflow-hidden bg-primary lg:block">
-        <div className="absolute inset-0 bg-hero opacity-60" />
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="relative flex h-full flex-col justify-between p-12 text-primary-foreground"
-        >
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">Boost Profits</p>
-            <h2 className="mt-3 text-4xl font-extrabold leading-tight">
-              Get paid on time,<br />every milestone.
-            </h2>
-          </div>
-          <div className="card-premium bg-background/95 p-6 text-foreground shadow-elegant">
-            <p className="text-eyebrow">This week</p>
-            <p className="mt-2 text-3xl font-extrabold tracking-tight">$3,840 recovered</p>
-            <p className="mt-1 text-sm text-muted-foreground">86% on-time payment rate</p>
-            <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-muted">
-              <motion.div initial={{ width: 0 }} animate={{ width: "86%" }} transition={{ duration: 1.2, delay: 0.6 }} className="h-full bg-success" />
-            </div>
-          </div>
-        </motion.div>
+        </main>
       </div>
     </div>
   );
