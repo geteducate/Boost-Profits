@@ -35,17 +35,19 @@ function HomePage() {
     <MarketingLayout>
       <Hero />
       <SocialProof />
-      <Problem />
-      <HowItWorks />
-      <DemoVideo />
-      <Features />
-      <RecoverySimulator />
-      <Proof />
-      <LeadMagnet />
-      <Trust />
-      <Pricing compact />
-      <FAQ />
-      <FinalCTA />
+      <Reveal><Problem /></Reveal>
+      <Reveal><HowItWorks /></Reveal>
+      <Reveal><DemoVideo /></Reveal>
+      <Reveal><Features /></Reveal>
+      <Suspense fallback={<div className="py-20" aria-hidden />}>
+        <Reveal><RecoverySimulator /></Reveal>
+      </Suspense>
+      <Reveal><Proof /></Reveal>
+      <Reveal><LeadMagnet /></Reveal>
+      <Reveal><Trust /></Reveal>
+      <Reveal><Pricing compact /></Reveal>
+      <Reveal><FAQ /></Reveal>
+      <Reveal><FinalCTA /></Reveal>
     </MarketingLayout>
   );
 }
