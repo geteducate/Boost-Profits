@@ -19,6 +19,7 @@ export function useSubscription() {
   const { session, loading: sessionLoading } = useSession();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const fetchSub = async (userId: string) => {
     const { data } = await (supabase as any)
