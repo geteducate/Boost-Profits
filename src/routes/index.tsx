@@ -220,26 +220,13 @@ function DemoVideo() {
     <Section
       eyebrow="See it work"
       title="Milestone → approval → invoice. In one flow."
-      description="A 90-second walkthrough of the exact workflow your clients will experience."
+      description="A calm, 5-step workflow your clients will move through automatically."
       align="center"
     >
       <div id="demo" className="mx-auto max-w-4xl">
-        <div className="relative aspect-video overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-[var(--primary)]/10 via-background to-[var(--primary-glow)]/10 shadow-glow">
-          <div className="absolute inset-0 bg-hero opacity-30" />
-          <div className="relative flex h-full w-full flex-col items-center justify-center gap-4">
-            <button
-              type="button"
-              aria-label="Play product demo"
-              className="group flex h-20 w-20 items-center justify-center rounded-full bg-cta text-primary-foreground shadow-elegant transition-transform hover:scale-105"
-            >
-              <PlayCircle className="h-10 w-10" />
-            </button>
-            <p className="text-sm font-semibold">90-second product demo</p>
-            <p className="text-xs text-muted-foreground">Coming soon — book a live walkthrough below</p>
-          </div>
-        </div>
+        <WorkflowLoop />
         <div className="mt-6 flex justify-center">
-          <Button asChild variant="outline" className="h-11">
+          <Button asChild variant="outline" className="h-11 transition-transform hover:-translate-y-0.5">
             <Link to="/contact">Book a 15-min live walkthrough <ArrowRight className="ml-1 h-4 w-4" /></Link>
           </Button>
         </div>
