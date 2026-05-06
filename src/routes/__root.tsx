@@ -44,6 +44,8 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/NAfpVvp3sabMt2FpNOqRdS13H4d2/social-images/social-1778047700918-Screenshot_2026-05-06_110752.webp" },
     ],
     links: [
+      { rel: "preconnect", href: "https://cdn.gpteng.co", crossOrigin: "anonymous" },
+      { rel: "dns-prefetch", href: "https://cdn.gpteng.co" },
       {
         rel: "stylesheet",
         href: appCss,
