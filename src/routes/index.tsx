@@ -170,9 +170,9 @@ function Problem() {
             ))}
           </div>
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
+        <Stagger className="grid gap-4 md:grid-cols-2" step={90}>
           {items.map((it) => (
-            <div key={it.title} className="card-premium lift p-6">
+            <div key={it.title} className="card-premium lift p-6 h-full">
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/8 text-primary">
                 <it.icon className="h-5 w-5" />
               </span>
@@ -180,7 +180,7 @@ function Problem() {
               <p className="mt-2 text-sm text-muted-foreground">{it.desc}</p>
             </div>
           ))}
-        </div>
+        </Stagger>
       </div>
     </Section>
   );
