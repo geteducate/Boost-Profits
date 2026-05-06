@@ -40,7 +40,7 @@ const fmtCompact = (n: number) => {
   return `$${Math.round(n)}`;
 };
 
-const CLIENTS = ["Northwind Studio", "Lumen Group", "Atrium Co", "Halo Labs", "Vertex Media", "Foxglove", "Polaris Co", "Bright & Co"];
+const CLIENTS = ["Brand studio", "Web agency", "Dev shop", "Design studio", "Marketing agency", "Consultancy", "Creative studio", "Service business"];
 
 export function RecoverySimulator() {
   const ref = useRef<HTMLDivElement>(null);

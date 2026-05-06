@@ -39,10 +39,10 @@ export function DashboardPreview() {
             <p className="text-eyebrow">Recent invoices</p>
             <ul className="mt-3 divide-y divide-border">
               {[
-                { c: "Northwind Studio", a: "$1,200", s: "Paid", tone: "success" },
-                { c: "Lumen Agency", a: "$840", s: "Sent", tone: "info" },
-                { c: "Helix Labs", a: "$460", s: "Overdue", tone: "warning" },
-                { c: "Fern & Co.", a: "$1,400", s: "Paid", tone: "success" },
+                { c: "Client · Brand studio", a: "$1,200", s: "Paid", tone: "success" },
+                { c: "Client · Web agency", a: "$840", s: "Sent", tone: "info" },
+                { c: "Client · Dev shop", a: "$460", s: "Overdue", tone: "warning" },
+                { c: "Client · Consultancy", a: "$1,400", s: "Paid", tone: "success" },
               ].map((r, i) => (
                 <motion.li
                   key={r.c}
@@ -78,7 +78,7 @@ export function DashboardPreview() {
           </span>
           <div>
             <p className="text-[11px] text-muted-foreground">Just now</p>
-            <p className="text-sm font-semibold">Helix Labs paid $460</p>
+            <p className="text-sm font-semibold">Client paid $460</p>
           </div>
         </div>
       </motion.div>
