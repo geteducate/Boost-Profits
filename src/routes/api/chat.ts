@@ -23,10 +23,33 @@ RULES:
 - If asked to do tasks (write code, draft contracts, translate large text), refuse briefly.
 - Prefer ending with a soft next step like "Want me to point you to /pricing?" when relevant.`;
 
+// Per-IP rate limit for the public chat widget. Best-effort, in-memory.
+const ipHits = new Map<string, { count: number; reset: number }>();
+function rateLimit(ip: string, max = 20, windowMs = 60 * 1000) {
+  const now = Date.now();
+  const entry = ipHits.get(ip);
+  if (!entry || entry.reset < now) {
+    ipHits.set(ip, { count: 1, reset: now + windowMs });
+    return true;
+  }
+  entry.count += 1;
+  return entry.count <= max;
+}
+
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const ip =
+          (request.headers.get("x-forwarded-for") ?? "").split(",")[0]?.trim() ||
+          request.headers.get("cf-connecting-ip") ||
+          "unknown";
+        if (!rateLimit(ip)) {
+          return new Response(
+            JSON.stringify({ error: "Too many requests. Please slow down." }),
+            { status: 429, headers: { "Content-Type": "application/json" } },
+          );
+        }
         try {
           const { messages } = (await request.json()) as {
             messages: { role: "user" | "assistant"; content: string }[];
