@@ -356,9 +356,9 @@ function Testimonials() {
         </div>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-3">
-        {items.map((t, i) => (
-          <figure key={i} className="card-premium lift p-6">
+      <Stagger className="grid gap-5 md:grid-cols-3" step={120}>
+        {items.map((t) => (
+          <figure key={t.r} className="card-premium lift p-6 h-full">
             <div className="flex items-center justify-between">
               <div className="flex gap-0.5" style={{ color: "var(--primary-glow)" }}>
                 {Array.from({ length: 5 }).map((_, k) => <Star key={k} className="h-3.5 w-3.5 fill-current" />)}
@@ -372,7 +372,7 @@ function Testimonials() {
             </figcaption>
           </figure>
         ))}
-      </div>
+      </Stagger>
     </div>
   );
 }
