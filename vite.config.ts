@@ -6,4 +6,11 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig();
+// On Vercel, we cannot ship a Cloudflare Worker bundle — disable the CF adapter
+// so the build produces a plain Node-compatible SSR entry under dist/server/index.js
+// that the Vercel serverless function in /api/server.mjs can invoke.
+const isVercel = !!process.env.VERCEL;
+
+export default defineConfig({
+  cloudflare: isVercel ? false : undefined,
+});
