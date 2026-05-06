@@ -1,7 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 export function SiteFooter() {
+  const { isAdmin } = useIsAdmin();
+
   return (
     <footer className="border-t border-border surface-mute">
       <div className="container-page grid gap-10 py-16 md:grid-cols-5">
@@ -44,7 +47,18 @@ export function SiteFooter() {
       <div className="border-t border-border">
         <div className="container-page flex flex-col items-center justify-between gap-3 py-6 text-xs text-muted-foreground sm:flex-row">
           <p>© {new Date().getFullYear()} BoostProfits. All rights reserved.</p>
-          <p>Built for agencies that want to get paid on time.</p>
+          <div className="flex items-center gap-3">
+            <p>Built for agencies that want to get paid on time.</p>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                aria-label="Admin panel"
+                className="text-[10px] uppercase tracking-wider text-muted-foreground/40 transition-colors hover:text-primary"
+              >
+                · Admin
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </footer>
