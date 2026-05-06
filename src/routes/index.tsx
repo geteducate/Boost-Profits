@@ -473,7 +473,7 @@ function Trust() {
     { i: BadgeCheck, t: "GDPR aligned", d: "Export or permanently delete your data anytime — no questions asked." },
     { i: Receipt, t: "Immutable audit trail", d: "Every change to invoices and milestones is signed and recorded." },
     { i: Cloud, t: "Daily encrypted backups", d: "Point-in-time recovery so your billing data is never lost." },
-    { i: Zap, t: "hCaptcha + bot shield", d: "Brute-force, scraping and credential-stuffing protection on every form." },
+    { i: Zap, t: "Turnstile + bot shield", d: "Brute-force, scraping and credential-stuffing protection on every form." },
   ];
   const badges = ["GDPR", "SOC 2 (in progress)", "TLS 1.3", "AES-256", "PCI ready"];
   return (
