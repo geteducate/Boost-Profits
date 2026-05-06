@@ -1,9 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { gatewayFetch, getPaddleClient, type PaddleEnv } from "@/lib/paddle.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+const resolvePriceSchema = z.object({
+  priceId: z.string().min(1).max(200).regex(/^[\w-]+$/),
+  environment: z.enum(["sandbox", "live"]),
+});
+
 export const resolvePaddlePrice = createServerFn({ method: "GET" })
-  .inputValidator((data: { priceId: string; environment: PaddleEnv }) => data)
+  .inputValidator((data: unknown) => resolvePriceSchema.parse(data))
   .handler(async ({ data }) => {
     const response = await gatewayFetch(
       data.environment,
