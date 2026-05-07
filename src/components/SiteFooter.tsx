@@ -15,7 +15,7 @@ export function SiteFooter() {
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" /> All systems operational
+              <span className="h-2 w-2 rounded-full bg-success bp-pulse-dot" /> All systems operational
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1">
               SOC-2 in progress
