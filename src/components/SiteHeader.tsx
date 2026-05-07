@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Menu, X, LogOut, LayoutDashboard, User as UserIcon } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
+import { ThemeToggle } from "./ThemeToggle";
 import { useSession, signOut } from "@/hooks/useSession";
 import {
   DropdownMenu,
