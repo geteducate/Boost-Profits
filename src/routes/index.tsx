@@ -295,9 +295,12 @@ function Proof() {
           </div>
           <div className="mt-6 flex h-44 items-end gap-2">
             {data.map((h, i) => (
-              <div key={i} className="flex flex-1 flex-col items-center gap-1">
-                <div className="w-full rounded-t-md bg-gradient-to-t from-[var(--primary)] to-[var(--primary-glow)]" style={{ height: `${h}%` }} />
-                <span className="text-[10px] text-muted-foreground">W{i + 1}</span>
+              <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
+                <div
+                  className="w-full rounded-t-md bg-gradient-to-t from-primary to-primary-glow shadow-[0_-2px_12px_-4px_color-mix(in_oklab,var(--primary)_60%,transparent)] transition-all duration-700"
+                  style={{ height: `${Math.max(h, 6)}%`, minHeight: 8 }}
+                />
+                <span className="text-[10px] font-medium text-muted-foreground">W{i + 1}</span>
               </div>
             ))}
           </div>
