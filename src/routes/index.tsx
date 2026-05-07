@@ -112,10 +112,10 @@ function Hero() {
 
 function SocialProof() {
   const stats: { v: React.ReactNode; l: string }[] = [
-    { v: <><AnimatedCounter value={200} />+</>, l: "Agencies in early access" },
-    { v: <><AnimatedCounter value={1.4} decimals={1} prefix="$" />M+ </>, l: "Invoices processed in beta" },
-    { v: <><AnimatedCounter value={4.9} decimals={1} /> / 5</>, l: "Average customer rating" },
-    { v: <>&lt; <AnimatedCounter value={15} /> min</>, l: "Average time to live" },
+    { v: <><AnimatedCounter value={63} duration={1800} />+</>, l: "Agencies in early access" },
+    { v: <><AnimatedCounter value={1.4} decimals={1} prefix="$" duration={1800} />M+</>, l: "Invoices processed in beta" },
+    { v: <><AnimatedCounter value={4.8} decimals={1} duration={1800} /> / 5</>, l: "Average customer rating" },
+    { v: <>&lt; <AnimatedCounter value={12} duration={1800} /> min</>, l: "Average time to live" },
   ];
   return (
     <section className="border-y border-border bg-background py-10">
