@@ -239,3 +239,21 @@
   50% { opacity: 0.5; transform: scale(1.4); }
 }
 .bp-pulse-dot { animation: bpPulseDot 2s ease-in-out infinite; }
+
+@keyframes bpFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+  60% { opacity: 0.7; }
+  100% { transform: translateY(120px) rotate(20deg); opacity: 0; }
+}
+@keyframes bpFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes bpParticle {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(0, -70px) scale(0); opacity: 0; }
+}
+@keyframes bpSealPulse {
+  0% { r: 0; opacity: 1; }
+  100% { r: 24; opacity: 0; }
+}

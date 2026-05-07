@@ -1,701 +1,535 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import {
-  ArrowRight, BadgeCheck, Bell, CheckCircle2, Clock, FileText,
-  Info, Lock, Radio, ShieldCheck, Sparkles, TrendingUp, Wallet, Workflow, Zap,
+  Building2,
+  CheckCircle2,
+  Clock,
+  Code2,
+  DollarSign,
+  Flame,
+  Image as ImageIcon,
+  Layers,
+  LineChart,
+  Mail,
+  Megaphone,
+  Palette,
+  Rocket,
+  Smile,
+  Sparkles,
+  TrendingUp,
+  Vault,
+  Wand2,
+  Wrench,
+  Zap,
 } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-/* Animated counter */
-function useCountUp(value: number, duration = 900) {
-  const [display, setDisplay] = useState(value);
-  const fromRef = useRef(value);
-  const startRef = useRef<number | null>(null);
-  useEffect(() => {
-    const from = fromRef.current;
-    const to = value;
-    startRef.current = null;
-    let raf = 0;
-    const tick = (t: number) => {
-      if (startRef.current === null) startRef.current = t;
-      const p = Math.min(1, (t - startRef.current) / duration);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setDisplay(from + (to - from) * eased);
-      if (p < 1) raf = requestAnimationFrame(tick);
-      else fromRef.current = to;
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [value, duration]);
-  return display;
-}
+type Size = "small" | "growing" | "established";
+type Milestone = "fewBig" | "balanced" | "manySmall";
+type Pain = "bleeding" | "average" | "fine";
 
-const fmt = (n: number) => `$${Math.round(n).toLocaleString()}`;
-const fmtCompact = (n: number) => {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}k`;
-  return `$${Math.round(n)}`;
-};
+const SIZES: { id: Size; label: string; range: string; icon: typeof Building2; mult: number }[] = [
+  { id: "small", label: "Small Studio", range: "$5k–25k MRR · 1–4 people", icon: Sparkles, mult: 1 },
+  { id: "growing", label: "Growing Agency", range: "$25k–80k MRR · 5–15 people", icon: Rocket, mult: 2.4 },
+  { id: "established", label: "Established Firm", range: "$80k+ MRR · 16+ people", icon: Building2, mult: 5.2 },
+];
 
-const CLIENTS = ["Brand studio", "Web agency", "Dev shop", "Design studio", "Marketing agency", "Consultancy", "Creative studio", "Service business"];
+const PROJECTS: { id: string; label: string; icon: typeof Code2 }[] = [
+  { id: "web", label: "Web Design", icon: Palette },
+  { id: "brand", label: "Branding", icon: Wand2 },
+  { id: "dev", label: "Development", icon: Code2 },
+  { id: "marketing", label: "Marketing", icon: Megaphone },
+  { id: "content", label: "Content", icon: ImageIcon },
+  { id: "retainer", label: "Retainers", icon: Wrench },
+];
+
+const MILESTONES: { id: Milestone; label: string; sub: string; factor: number }[] = [
+  { id: "fewBig", label: "Few big", sub: "2–3 milestones per project", factor: 0.85 },
+  { id: "balanced", label: "Balanced", sub: "4–6 milestones per project", factor: 1.0 },
+  { id: "manySmall", label: "Many small", sub: "7+ milestones per project", factor: 1.25 },
+];
+
+const PAINS: { id: Pain; label: string; sub: string; icon: typeof Flame; factor: number; tone: string }[] = [
+  { id: "bleeding", label: "We're bleeding cash", sub: "Constant chasing, late every month", icon: Flame, factor: 1.4, tone: "text-[#FF5C5C]" },
+  { id: "average", label: "Average chasing", sub: "A few overdue invoices weekly", icon: Clock, factor: 1.0, tone: "text-[#F5A623]" },
+  { id: "fine", label: "Mostly fine", sub: "Just want predictability", icon: Smile, factor: 0.6, tone: "text-[#00C27C]" },
+];
 
 export function RecoverySimulator() {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const [size, setSize] = useState<Size | null>(null);
+  const [projects, setProjects] = useState<string[]>([]);
+  const [milestone, setMilestone] = useState<Milestone | null>(null);
+  const [pain, setPain] = useState<Pain | null>(null);
+  const [runId, setRunId] = useState(0);
+  const [email, setEmail] = useState("");
 
-  const [volume, setVolume] = useState(24);
-  const [avgValue, setAvgValue] = useState(1800);
-  const [latePct, setLatePct] = useState(38);
-  const [daysLate, setDaysLate] = useState(18);
-  const [reminders, setReminders] = useState(true);
-  const [milestones, setMilestones] = useState(true);
-  const [scope, setScope] = useState(false);
+  const ready = size && projects.length > 0 && milestone && pain;
+  const simulated = runId > 0;
 
-  const result = useMemo(() => {
-    const monthlyBilled = volume * avgValue;
-    const lateAmount = monthlyBilled * (latePct / 100);
-    let lift = 0;
-    if (reminders) lift += 0.34;
-    if (milestones) lift += 0.22;
-    if (scope) lift += 0.11;
-    lift = Math.min(lift, 0.72);
-    const recovered = lateAmount * lift;
-    const overdueReductionPct = Math.round(lift * 100 * 0.78);
-    const hoursSaved = Math.round(volume * (reminders ? 0.55 : 0.18) + (milestones ? 4 : 0));
-    const newDaysLate = Math.max(2, Math.round(daysLate * (1 - lift * 0.7)));
-    const annualRecovery = recovered * 12;
-    // "score" 0-100 based on adoption + lift quality
-    const score = Math.round(
-      Math.min(100, lift * 100 + (reminders ? 4 : 0) + (milestones ? 4 : 0) + (scope ? 3 : 0)),
-    );
-    return { monthlyBilled, lateAmount, recovered, overdueReductionPct, hoursSaved, newDaysLate, annualRecovery, lift, score };
-  }, [volume, avgValue, latePct, daysLate, reminders, milestones, scope]);
+  const results = useMemo(() => {
+    if (!ready) return null;
+    const sm = SIZES.find((s) => s.id === size)!.mult;
+    const pf = 0.8 + 0.15 * projects.length;
+    const mf = MILESTONES.find((m) => m.id === milestone)!.factor;
+    const pn = PAINS.find((p) => p.id === pain)!.factor;
+    const monthlyLeak = 4200 * sm * mf * pn * Math.min(pf, 1.4);
+    const recovered = Math.round(monthlyLeak * 12 * 0.78);
+    const hours = Math.round(6 + 4 * sm * pn);
+    const onTimeBefore = Math.max(35, Math.min(70, Math.round(58 - 8 * pn)));
+    const onTimeAfter = 86;
+    const proCost = 66 * 12;
+    const roi = Math.max(1, Math.round(recovered / proCost));
+    const breakEven = Math.max(2, Math.round(792 / Math.max(recovered / 365, 1)));
+    const insight =
+      recovered > 120000
+        ? "That's enough to pay for your entire team's salary for a quarter."
+        : recovered > 40000
+          ? "That's a senior hire — recovered, not chased."
+          : "That's your next 6 months of tools, paid for.";
+    return { recovered, monthlyLeak: Math.round(monthlyLeak), hours, onTimeBefore, onTimeAfter, roi, breakEven, insight };
+  }, [ready, size, projects, milestone, pain]);
 
-  const recoveredAnim = useCountUp(result.recovered);
-  const annualAnim = useCountUp(result.annualRecovery);
-  const reduceAnim = useCountUp(result.overdueReductionPct);
-  const hoursAnim = useCountUp(result.hoursSaved);
-  const scoreAnim = useCountUp(result.score, 700);
+  const toggleProject = (id: string) =>
+    setProjects((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
-  void daysLate;
+  const handleRun = () => {
+    if (!ready) return;
+    setRunId((r) => r + 1);
+    setTimeout(() => {
+      const el = document.getElementById("rlv-results");
+      el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 120);
+  };
 
-  /* Live "invoice paid" ticker */
-  type Tick = { id: number; client: string; amount: number };
-  const [ticks, setTicks] = useState<Tick[]>([]);
-  const idRef = useRef(0);
-  useEffect(() => {
-    if (!inView) return;
-    const interval = setInterval(() => {
-      const amount = Math.round(avgValue * (0.5 + Math.random() * 1.5));
-      const client = CLIENTS[Math.floor(Math.random() * CLIENTS.length)];
-      idRef.current += 1;
-      setTicks((prev) => [{ id: idRef.current, client, amount }, ...prev].slice(0, 5));
-    }, 1800);
-    return () => clearInterval(interval);
-  }, [inView, avgValue]);
+  const handleEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.includes("@")) {
+      toast.error("Enter a valid email");
+      return;
+    }
+    toast.success("Report on its way", { description: `We'll send your personalized leak report to ${email}.` });
+    setEmail("");
+  };
 
   return (
-    <section ref={ref} className="relative overflow-hidden bg-[oklch(0.14_0.04_265)] text-white">
-      {/* atmospheric backdrop */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 left-1/3 h-[560px] w-[560px] rounded-full bg-[oklch(0.62_0.18_250/0.35)] blur-[120px]" />
-        <div className="absolute bottom-[-200px] right-[-100px] h-[600px] w-[600px] rounded-full bg-[oklch(0.55_0.22_300/0.28)] blur-[140px]" />
-        <div className="absolute top-1/3 left-0 h-[300px] w-[300px] rounded-full bg-[oklch(0.7_0.18_180/0.18)] blur-[100px]" />
-        {/* grid */}
-        <svg className="absolute inset-0 h-full w-full opacity-[0.07]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="rs-grid" width="44" height="44" patternUnits="userSpaceOnUse">
-              <path d="M 44 0 L 0 0 0 44" fill="none" stroke="white" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#rs-grid)" />
-        </svg>
-      </div>
+    <section className="relative overflow-hidden py-24 md:py-32">
+      <div className="pointer-events-none absolute inset-0 bg-hero opacity-60" />
+      <div className="container-page relative">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="text-eyebrow text-[#00C27C]">Revenue leak visualizer</span>
+          <h2 className="mt-3 text-h2">See exactly how much you're losing — and recovering</h2>
+          <p className="mt-4 text-muted-foreground">Four quick choices. One honest number. No fluff.</p>
+        </div>
 
-      <div className="container-page relative py-24 md:py-32">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto max-w-2xl text-center"
-        >
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80 backdrop-blur">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            </span>
-            Live simulation
-          </span>
-          <h2 className="mt-5 font-serif text-[40px] leading-[1.05] tracking-tight md:text-[56px]">
-            Simulate your{" "}
-            <span className="bg-gradient-to-r from-[oklch(0.85_0.14_220)] via-[oklch(0.78_0.16_270)] to-[oklch(0.78_0.18_320)] bg-clip-text text-transparent">
-              revenue recovery
-            </span>
-          </h2>
-          <p className="mt-4 text-base text-white/65">
-            Drag, toggle, watch invoices clear in real time. This is the cash your agency
-            is leaving on the table — and exactly how much you'd reclaim.
-          </p>
-        </motion.div>
+        <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          {/* LEFT — animated scene */}
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <Scene simulated={simulated} runId={runId} />
+          </div>
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-12">
-          {/* LEFT — CONTROL DECK */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:col-span-5"
-          >
-            <div className="relative rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-6 shadow-[0_20px_70px_-20px_rgba(0,0,0,0.6)] backdrop-blur-xl md:p-7">
-              <div className="mb-5 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 ring-1 ring-white/15">
-                    <Workflow className="h-3.5 w-3.5" />
-                  </span>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">Control deck</p>
-                </div>
-                <span className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-widest text-white/40">
-                  <Radio className="h-3 w-3" /> Tuned
-                </span>
+          {/* RIGHT — selections + results */}
+          <div className="space-y-8">
+            <Step n={1} title="Pick your agency size">
+              <div className="grid gap-3 sm:grid-cols-3">
+                {SIZES.map((s) => {
+                  const active = size === s.id;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setSize(s.id)}
+                      className={cardCls(active) + " text-left"}
+                    >
+                      <s.icon className={`h-5 w-5 ${active ? "text-[#00C27C]" : "text-muted-foreground"}`} />
+                      <p className="mt-3 text-sm font-semibold">{s.label}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{s.range}</p>
+                    </button>
+                  );
+                })}
               </div>
+            </Step>
 
-              <div className="space-y-5">
-                <SliderRow label="Monthly invoices" value={volume} suffix=" / mo" min={4} max={120} step={1} onChange={setVolume} />
-                <SliderRow label="Average invoice value" value={avgValue} prefix="$" min={250} max={12000} step={50} onChange={setAvgValue} />
-                <SliderRow label="Currently paid late" value={latePct} suffix="%" min={5} max={75} step={1} onChange={setLatePct} />
-                <SliderRow label="Average days late" value={daysLate} suffix=" days" min={3} max={60} step={1} onChange={setDaysLate} />
+            <Step n={2} title="What do you sell?" hint="Pick all that apply">
+              <div className="flex flex-wrap gap-2">
+                {PROJECTS.map((p) => {
+                  const active = projects.includes(p.id);
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => toggleProject(p.id)}
+                      className={`group inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                        active
+                          ? "border-[#00C27C] bg-[#00C27C]/10 text-[#00C27C] shadow-[0_0_0_1px_rgba(0,194,124,0.3)]"
+                          : "border-border bg-card text-foreground hover:border-[#00C27C]/50"
+                      }`}
+                    >
+                      {active ? <CheckCircle2 className="h-4 w-4" /> : <p.icon className="h-4 w-4" />}
+                      {p.label}
+                    </button>
+                  );
+                })}
               </div>
+            </Step>
 
-              <div className="mt-7 space-y-2.5 border-t border-white/10 pt-6">
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">Automations</p>
-                <ToggleRow icon={Bell} label="Automated reminders" hint="Polite, on-brand cadence" checked={reminders} onChange={setReminders} />
-                <ToggleRow icon={Workflow} label="Milestone billing" hint="Lock approvals before next phase" checked={milestones} onChange={setMilestones} />
-                <ToggleRow icon={ShieldCheck} label="Scope creep protection" hint="Auto change-orders on new asks" checked={scope} onChange={setScope} />
+            <Step n={3} title="How are projects milestoned?">
+              <div className="grid gap-3 sm:grid-cols-3">
+                {MILESTONES.map((m) => {
+                  const active = milestone === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setMilestone(m.id)}
+                      className={cardCls(active) + " text-left"}
+                    >
+                      <Layers className={`h-5 w-5 ${active ? "text-[#00C27C]" : "text-muted-foreground"}`} />
+                      <p className="mt-3 text-sm font-semibold">{m.label}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{m.sub}</p>
+                    </button>
+                  );
+                })}
               </div>
+            </Step>
 
-              {/* Recovery score gauge */}
-              <div className="mt-6 rounded-xl border border-white/10 bg-black/30 p-4">
-                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">
-                  <span>Recovery score</span>
-                  <span className="text-white/85 tabular-nums">{Math.round(scoreAnim)} / 100</span>
-                </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
-                  <motion.div
-                    className="h-full rounded-full bg-gradient-to-r from-[oklch(0.78_0.16_220)] via-[oklch(0.74_0.18_270)] to-[oklch(0.78_0.18_320)] shadow-[0_0_18px_rgba(120,160,255,0.55)]"
-                    animate={{ width: `${result.score}%` }}
-                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                </div>
-                <p className="mt-2 inline-flex items-center gap-1 text-[10px] text-white/45">
-                  <Info className="h-2.5 w-2.5" /> Demo data — real lift varies by workflow.
-                </p>
+            <Step n={4} title="How painful is chasing payments?">
+              <div className="grid gap-3 sm:grid-cols-3">
+                {PAINS.map((p) => {
+                  const active = pain === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setPain(p.id)}
+                      className={cardCls(active) + " text-left"}
+                    >
+                      <p.icon className={`h-5 w-5 ${active ? "text-[#00C27C]" : p.tone}`} />
+                      <p className="mt-3 text-sm font-semibold">{p.label}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{p.sub}</p>
+                    </button>
+                  );
+                })}
               </div>
-            </div>
-          </motion.div>
+            </Step>
 
-          {/* RIGHT — RESULT */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-5 lg:col-span-7"
-          >
-            {/* Headline result */}
-            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.04] to-transparent p-6 backdrop-blur-xl md:p-8">
-              {/* glow */}
-              <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-[oklch(0.62_0.2_270/0.4)] blur-3xl" />
-              <div className="relative flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">Potential recovered this month</p>
-                  <div className="mt-2 flex items-end gap-3">
-                    <p className="font-serif text-[56px] leading-none tracking-tight tabular-nums md:text-[76px]">
-                      <AnimatedDigits value={recoveredAnim} />
-                    </p>
-                  </div>
-                  <p className="mt-3 text-sm text-white/60">
-                    On <span className="font-semibold text-white tabular-nums">{fmt(result.monthlyBilled)}</span> billed monthly • new days-late{" "}
-                    <span className="font-semibold text-white tabular-nums">{result.newDaysLate}d</span>
-                  </p>
-                </div>
-                <span className="hidden shrink-0 sm:inline-flex items-center gap-1 rounded-full border border-emerald-300/30 bg-emerald-400/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-300">
-                  <TrendingUp className="h-3.5 w-3.5" /> Projected lift {Math.round(result.lift * 100)}%
-                </span>
-              </div>
-
-              <div className="relative mt-6 grid grid-cols-3 gap-3">
-                <Metric icon={FileText} label="Overdue reduced" value={`${Math.round(reduceAnim)}%`} />
-                <Metric icon={Clock} label="Hours saved" value={`${Math.round(hoursAnim)} hrs`} />
-                <Metric icon={Wallet} label="Annual recovery" value={fmtCompact(annualAnim)} />
-              </div>
-
-              <div className="relative mt-6 flex flex-wrap items-center gap-3">
-                <Button asChild size="lg" className="group h-11 bg-white px-5 text-[oklch(0.18_0.04_260)] shadow-[0_10px_40px_-10px_rgba(255,255,255,0.4)] hover:bg-white/95">
-                  <Link to="/signup">
-                    Lock in my recovery
-                    <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="h-11 border-white/20 bg-white/5 px-5 text-white hover:bg-white/10 hover:text-white">
-                  <Link to="/contact">Book demo</Link>
-                </Button>
-              </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                onClick={handleRun}
+                disabled={!ready}
+                className="bg-[#00C27C] text-[#08090D] font-bold hover:bg-[#00A869] hover:-translate-y-px hover:shadow-[0_8px_24px_rgba(0,194,124,0.3)] transition-all disabled:opacity-50 disabled:hover:translate-y-0"
+                size="lg"
+              >
+                <Zap className="mr-1.5 h-4 w-4" />
+                {simulated ? "Re-run simulation" : "Run simulation"}
+              </Button>
+              {!ready && <span className="text-xs text-muted-foreground">Make all four picks to unlock</span>}
             </div>
 
-            {/* Quest board + ticker */}
-            <div className="grid gap-5 md:grid-cols-5">
-              <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl md:col-span-3">
-                <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-white/70" />
-                    <p className="text-sm font-semibold tracking-tight">Payoff Quest · Live</p>
-                  </div>
-                  <div className="flex items-center gap-3 text-[11px]">
-                    <LegendDot color="oklch(0.78 0.16 250)" label="Token" />
-                    <LegendDot color="oklch(0.82 0.18 145)" label="Cleared" />
-                  </div>
-                </div>
-                <PayoffQuest lift={result.lift} avgValue={avgValue} active={inView} />
-              </div>
-
-              {/* Live paid feed */}
-              <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl md:col-span-2">
-                <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-emerald-300" />
-                    <p className="text-sm font-semibold">Live paid feed</p>
-                  </div>
-                  <span className="text-[10px] font-medium uppercase tracking-widest text-white/40">Streaming</span>
-                </div>
-                <ul className="relative h-[210px] overflow-hidden px-2 py-2">
-                  <AnimatePresence initial={false}>
-                    {ticks.map((t) => (
-                      <motion.li
-                        key={t.id}
-                        layout
-                        initial={{ opacity: 0, y: -10, scale: 0.96 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                        className="mx-1 my-1 flex items-center justify-between rounded-lg border border-white/5 bg-gradient-to-r from-white/[0.06] to-transparent px-3 py-2"
-                      >
-                        <span className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-                          <span>
-                            <span className="block text-[12px] font-semibold leading-tight">{t.client}</span>
-                            <span className="block text-[10px] text-white/45">Invoice cleared</span>
-                          </span>
-                        </span>
-                        <span className="font-serif text-[15px] font-semibold tabular-nums text-emerald-200">
-                          +{fmt(t.amount)}
-                        </span>
-                      </motion.li>
-                    ))}
-                  </AnimatePresence>
-                  {ticks.length === 0 && (
-                    <li className="mx-1 my-1 flex items-center gap-2 rounded-lg border border-dashed border-white/10 px-3 py-2 text-[12px] text-white/40">
-                      <Radio className="h-3.5 w-3.5" /> Listening for paid invoices…
-                    </li>
-                  )}
-                  {/* fade bottom */}
-                  <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[oklch(0.14_0.04_265)] to-transparent" />
-                </ul>
-              </div>
+            {/* Results */}
+            <div id="rlv-results" className="scroll-mt-28">
+              {simulated && results && <Results key={runId} r={results} email={email} setEmail={setEmail} onSubmit={handleEmail} />}
             </div>
-
-            {/* trust strip */}
-            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-[11px] font-medium text-white/55 backdrop-blur">
-              <span className="inline-flex items-center gap-1.5"><Lock className="h-3 w-3" /> SOC2-aligned</span>
-              <span className="inline-flex items-center gap-1.5"><BadgeCheck className="h-3 w-3" /> Built for agencies</span>
-              <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3 w-3" /> Privacy-safe</span>
-              <span className="inline-flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> No credit card</span>
-            </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function AnimatedDigits({ value }: { value: number }) {
-  return <>{fmt(value)}</>;
+function cardCls(active: boolean) {
+  return [
+    "group relative flex flex-col rounded-xl border p-4 transition-all duration-200",
+    active
+      ? "border-[#00C27C] bg-[#00C27C]/[0.06] shadow-[0_0_0_1px_#00C27C,0_18px_40px_-20px_rgba(0,194,124,0.4)] -translate-y-0.5"
+      : "border-border bg-card hover:border-[#00C27C]/50 hover:-translate-y-0.5",
+  ].join(" ");
 }
 
-function SliderRow({
-  label, value, min, max, step, onChange, prefix = "", suffix = "",
-}: {
-  label: string; value: number; min: number; max: number; step: number;
-  onChange: (v: number) => void; prefix?: string; suffix?: string;
-}) {
+function Step({ n, title, hint, children }: { n: number; title: string; hint?: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="flex items-baseline justify-between">
-        <label className="text-[12px] font-medium uppercase tracking-wider text-white/60">{label}</label>
-        <span className="font-serif text-[18px] font-semibold tabular-nums text-white">
-          {prefix}{value.toLocaleString()}<span className="text-white/40">{suffix}</span>
+      <div className="mb-4 flex items-baseline gap-3">
+        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#00C27C]/40 bg-[#00C27C]/10 text-xs font-bold text-[#00C27C]">
+          {n}
         </span>
+        <h3 className="text-base font-semibold">{title}</h3>
+        {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
       </div>
-      <Slider
-        className="mt-3 [&_[data-slot=slider-track]]:bg-white/10 [&_[data-slot=slider-range]]:bg-gradient-to-r [&_[data-slot=slider-range]]:from-[oklch(0.78_0.14_220)] [&_[data-slot=slider-range]]:to-[oklch(0.78_0.18_300)] [&_[data-slot=slider-thumb]]:border-white [&_[data-slot=slider-thumb]]:bg-white [&_[data-slot=slider-thumb]]:shadow-[0_0_0_4px_rgba(255,255,255,0.12)]"
-        value={[value]}
-        min={min}
-        max={max}
-        step={step}
-        onValueChange={(v) => onChange(v[0])}
-      />
+      {children}
     </div>
   );
 }
 
-function ToggleRow({
-  icon: Icon, label, hint, checked, onChange,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string; hint: string; checked: boolean; onChange: (v: boolean) => void;
-}) {
+/* ---------------- Scene ---------------- */
+
+function Scene({ simulated, runId }: { simulated: boolean; runId: number }) {
   return (
-    <label
-      className={`flex cursor-pointer items-center justify-between gap-3 rounded-lg border px-3 py-2.5 transition ${
-        checked
-          ? "border-white/20 bg-gradient-to-r from-white/[0.08] to-white/[0.02] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
-          : "border-white/8 bg-white/[0.02] hover:bg-white/[0.04]"
-      }`}
-    >
-      <span className="flex items-center gap-3">
-        <span className={`inline-flex h-8 w-8 items-center justify-center rounded-md transition ${checked ? "bg-white/15 text-white shadow-[0_0_18px_rgba(160,180,255,0.4)]" : "bg-white/5 text-white/60"}`}>
-          <Icon className="h-4 w-4" />
+    <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-[#0B1220] via-[#0F1117] to-[#0A1A14] p-6 shadow-[0_30px_80px_-30px_rgba(0,194,124,0.35)]">
+      <div className="absolute inset-0 opacity-40 [background-image:radial-gradient(circle_at_20%_10%,rgba(0,194,124,0.18),transparent_50%),radial-gradient(circle_at_80%_90%,rgba(55,138,221,0.14),transparent_55%)]" />
+      <div className="relative flex items-center justify-between">
+        <span className="text-eyebrow text-[#00C27C]">{simulated ? "Sealed · flowing" : "Live leak"}</span>
+        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+          simulated ? "bg-[#00C27C]/12 text-[#00C27C]" : "bg-[#FF5C5C]/12 text-[#FF5C5C]"
+        }`}>
+          <span className={`h-1.5 w-1.5 rounded-full ${simulated ? "bg-[#00C27C]" : "bg-[#FF5C5C]"} bp-pulse-dot`} />
+          {simulated ? "secure" : "leaking"}
         </span>
-        <span>
-          <span className="block text-[13px] font-semibold">{label}</span>
-          <span className="block text-[11px] text-white/45">{hint}</span>
-        </span>
-      </span>
-      <Switch checked={checked} onCheckedChange={onChange} />
-    </label>
-  );
-}
-
-function Metric({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-white/10 bg-black/20 p-3 backdrop-blur">
-      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/45">
-        <Icon className="h-3 w-3" /> {label}
-      </div>
-      <p className="mt-1 font-serif text-[22px] font-semibold tabular-nums">{value}</p>
-    </div>
-  );
-}
-
-function LegendDot({ color, label }: { color: string; label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 text-white/55">
-      <span className="h-2 w-2 rounded-full" style={{ background: color, boxShadow: `0 0 8px ${color}` }} />{label}
-    </span>
-  );
-}
-
-/* ============================================================
-   PayoffQuest — game-board milestone payoff visualization
-   Each invoice is a token that hops node→node along a path of
-   payment milestones (Sent → Viewed → Approved → Nudge → Paid).
-   ============================================================ */
-
-type Stage = { key: string; label: string; icon: string };
-const STAGES: Stage[] = [
-  { key: "sent", label: "Sent", icon: "✉" },
-  { key: "viewed", label: "Viewed", icon: "👁" },
-  { key: "approved", label: "Approved", icon: "✓" },
-  { key: "nudge", label: "Nudge", icon: "🔔" },
-  { key: "paid", label: "Paid", icon: "★" },
-];
-
-type Token = {
-  id: number;
-  client: string;
-  amount: number;
-  stage: number;
-  lane: number;
-  status: "hopping" | "idle" | "cleared" | "stalled";
-  nextAt: number;
-  willStall: boolean;
-};
-
-type Burst = { id: number; x: number; y: number; amount: number };
-
-function PayoffQuest({ lift, avgValue, active }: { lift: number; avgValue: number; active: boolean }) {
-  const [tokens, setTokens] = useState<Token[]>([]);
-  const [bursts, setBursts] = useState<Burst[]>([]);
-  const [hud, setHud] = useState({ cleared: 0, recovered: 0, combo: 0, best: 0 });
-  const [fills, setFills] = useState<number[]>(() => STAGES.map(() => 0));
-  const idRef = useRef(2000);
-  const burstIdRef = useRef(5000);
-
-  // Spawn tokens
-  useEffect(() => {
-    if (!active) return;
-    let alive = true;
-    const spawn = () => {
-      if (!alive) return;
-      idRef.current += 1;
-      const willStall = Math.random() > 0.45 + lift * 0.55;
-      const tok: Token = {
-        id: idRef.current,
-        client: CLIENTS[Math.floor(Math.random() * CLIENTS.length)],
-        amount: Math.round(avgValue * (0.5 + Math.random() * 1.5)),
-        stage: 0,
-        lane: Math.floor(Math.random() * 3),
-        status: "idle",
-        nextAt: performance.now() + 350 + Math.random() * 400,
-        willStall,
-      };
-      setTokens((prev) => [...prev.slice(-9), tok]);
-      setTimeout(spawn, 900 + Math.random() * 600);
-    };
-    spawn();
-    return () => {
-      alive = false;
-    };
-  }, [active, lift, avgValue]);
-
-  // Hop loop
-  useEffect(() => {
-    if (!active) return;
-    let raf = 0;
-    const tick = (t: number) => {
-      setTokens((prev) => {
-        let recoveredAdd = 0;
-        let clearedAdd = 0;
-        let stalledAdd = 0;
-        const stageHits: number[] = [];
-        const next: Token[] = [];
-        for (const tok of prev) {
-          if (tok.status === "cleared" || tok.status === "stalled") {
-            if (t - tok.nextAt < 1800) next.push(tok);
-            continue;
-          }
-          if (t >= tok.nextAt) {
-            const newStage = tok.stage + 1;
-            if (tok.willStall && newStage === STAGES.length - 1) {
-              next.push({ ...tok, status: "stalled", nextAt: t });
-              stalledAdd += 1;
-              continue;
-            }
-            stageHits.push(newStage);
-            if (newStage >= STAGES.length - 1) {
-              recoveredAdd += tok.amount;
-              clearedAdd += 1;
-              next.push({ ...tok, stage: newStage, status: "cleared", nextAt: t });
-              burstIdRef.current += 1;
-              setBursts((b) => [
-                ...b.slice(-6),
-                { id: burstIdRef.current, x: 92, y: 50 + (tok.lane - 1) * 14, amount: tok.amount },
-              ]);
-              continue;
-            }
-            next.push({
-              ...tok,
-              stage: newStage,
-              status: "hopping",
-              nextAt: t + Math.max(220, 600 + Math.random() * 500 - lift * 280),
-            });
-          } else {
-            next.push(tok);
-          }
-        }
-        if (stageHits.length) {
-          setFills((f) => f.map((v, i) => (stageHits.includes(i) ? Math.min(1, v + 0.22) : Math.max(0, v - 0.005))));
-        } else {
-          setFills((f) => f.map((v) => Math.max(0, v - 0.004)));
-        }
-        if (clearedAdd || stalledAdd) {
-          setHud((h) => {
-            const combo = clearedAdd ? h.combo + clearedAdd : 0;
-            return {
-              cleared: h.cleared + clearedAdd,
-              recovered: h.recovered + recoveredAdd,
-              combo,
-              best: Math.max(h.best, combo),
-            };
-          });
-        }
-        return next;
-      });
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [active, lift]);
-
-  useEffect(() => {
-    if (!bursts.length) return;
-    const t = setTimeout(() => setBursts((b) => b.slice(1)), 900);
-    return () => clearTimeout(t);
-  }, [bursts]);
-
-  const stageX = STAGES.map((_, i) => 8 + (i * 84) / (STAGES.length - 1));
-
-  return (
-    <div className="relative px-4 pb-4 pt-3">
-      <div className="mb-3 grid grid-cols-3 gap-2">
-        <HudStat label="Cleared" value={hud.cleared.toString()} tone="paid" />
-        <HudStat label="Recovered" value={fmtCompact(hud.recovered)} tone="paid" />
-        <HudStat
-          label={hud.combo >= 3 ? "On fire" : "Combo"}
-          value={`x${hud.combo}`}
-          tone={hud.combo >= 3 ? "fire" : "muted"}
-        />
       </div>
 
-      <div
-        className="relative overflow-hidden rounded-xl border border-white/10 bg-[radial-gradient(ellipse_at_top,oklch(0.22_0.06_265/0.6),oklch(0.12_0.04_265/0.4))]"
-        style={{ height: 230 }}
-      >
-        <svg aria-hidden className="absolute inset-0 h-full w-full opacity-[0.08]">
-          <defs>
-            <pattern id="quest-hex" width="22" height="20" patternUnits="userSpaceOnUse">
-              <path d="M11 0 L22 5 L22 15 L11 20 L0 15 L0 5 Z" fill="none" stroke="white" strokeWidth="0.4" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#quest-hex)" />
-        </svg>
+      <svg viewBox="0 0 480 360" className="relative mt-4 h-[280px] w-full md:h-[360px]" key={runId}>
+        <defs>
+          <linearGradient id="pipe" x1="0" x2="1">
+            <stop offset="0" stopColor="#1a2230" />
+            <stop offset="1" stopColor="#0f1620" />
+          </linearGradient>
+          <linearGradient id="flow" x1="0" x2="1">
+            <stop offset="0" stopColor="#00C27C" />
+            <stop offset="1" stopColor="#5BE3B5" />
+          </linearGradient>
+          <radialGradient id="vaultGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stopColor="#00C27C" stopOpacity="0.5" />
+            <stop offset="1" stopColor="#00C27C" stopOpacity="0" />
+          </radialGradient>
+        </defs>
 
-        <svg aria-hidden className="absolute inset-0 h-full w-full">
-          <defs>
-            <linearGradient id="quest-path" x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0%" stopColor="oklch(0.78 0.16 220)" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="oklch(0.82 0.18 145)" stopOpacity="0.7" />
-            </linearGradient>
-          </defs>
-          <line
-            x1={`${stageX[0]}%`} y1="50%" x2={`${stageX[stageX.length - 1]}%`} y2="50%"
-            stroke="url(#quest-path)" strokeWidth="2" strokeDasharray="4 6"
-          />
-        </svg>
+        {/* invoices feeding pipe */}
+        <g transform="translate(10,60)">
+          <rect width="60" height="80" rx="6" fill="#161e2c" stroke="rgba(255,255,255,0.08)" />
+          <rect x="8" y="10" width="44" height="4" rx="2" fill="rgba(255,255,255,0.18)" />
+          <rect x="8" y="20" width="30" height="4" rx="2" fill="rgba(255,255,255,0.10)" />
+          <rect x="8" y="60" width="20" height="6" rx="2" fill="#00C27C" />
+        </g>
 
-        {STAGES.map((s, i) => {
-          const isFinal = i === STAGES.length - 1;
-          const fill = fills[i] ?? 0;
-          return (
-            <div
-              key={s.key}
-              className="absolute -translate-x-1/2 -translate-y-1/2 text-center"
-              style={{ left: `${stageX[i]}%`, top: "50%" }}
-            >
-              <motion.div
-                animate={fill > 0.1 ? { scale: [1, 1.12, 1] } : { scale: 1 }}
-                transition={{ duration: 0.4 }}
-                className={`relative flex h-12 w-12 items-center justify-center rounded-2xl border text-base font-bold ${
-                  isFinal
-                    ? "border-emerald-300/50 bg-gradient-to-br from-emerald-400/30 to-emerald-600/20 text-emerald-100 shadow-[0_0_22px_rgba(80,255,180,0.35)]"
-                    : "border-white/15 bg-white/[0.06] text-white/85 backdrop-blur"
-                }`}
-              >
-                <span aria-hidden>{s.icon}</span>
-                <svg className="pointer-events-none absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 40 40">
-                  <circle cx="20" cy="20" r="18" stroke="white" strokeOpacity="0.08" strokeWidth="2" fill="none" />
-                  <motion.circle
-                    cx="20" cy="20" r="18" fill="none"
-                    stroke={isFinal ? "oklch(0.85 0.18 145)" : "oklch(0.82 0.16 230)"}
-                    strokeWidth="2" strokeLinecap="round"
-                    strokeDasharray={2 * Math.PI * 18}
-                    animate={{ strokeDashoffset: 2 * Math.PI * 18 * (1 - fill) }}
-                    transition={{ duration: 0.4 }}
+        {/* pipe */}
+        <rect x="80" y="170" width="280" height="36" rx="18" fill="url(#pipe)" stroke="rgba(255,255,255,0.06)" />
+        {/* flow inside pipe */}
+        <rect x="84" y="174" width="272" height="28" rx="14" fill="url(#flow)" opacity={simulated ? 0.9 : 0.25}
+          style={{ transition: "opacity 700ms ease" }} />
+
+        {/* leaks (cracks) */}
+        {[140, 210, 290].map((cx, i) => (
+          <g key={i}>
+            <path
+              d={`M${cx} 206 l-4 12 l8 -2 l-4 14`}
+              stroke={simulated ? "transparent" : "#FF5C5C"}
+              strokeWidth="2"
+              fill="none"
+              style={{ transition: "stroke 400ms ease" }}
+            />
+            {/* dripping bills when leaking */}
+            {!simulated && (
+              <g>
+                {[0, 1, 2].map((j) => (
+                  <rect
+                    key={j}
+                    x={cx - 8}
+                    y={220}
+                    width="16"
+                    height="10"
+                    rx="2"
+                    fill="#1a8a5f"
+                    opacity="0.85"
+                    style={{
+                      animation: `bpFall 2.6s ${i * 0.4 + j * 0.7}s linear infinite`,
+                      transformOrigin: `${cx}px 230px`,
+                    }}
                   />
-                </svg>
-              </motion.div>
-              <p className="mt-1.5 text-[9px] font-bold uppercase tracking-[0.16em] text-white/55">
-                {s.label}
+                ))}
+              </g>
+            )}
+            {/* seal pulse on simulate */}
+            {simulated && (
+              <circle cx={cx} cy={206} r="6" fill="none" stroke="#00C27C" strokeWidth="2"
+                style={{ animation: "bpSealPulse 900ms ease-out forwards" }} />
+            )}
+          </g>
+        ))}
+
+        {/* vault */}
+        <g transform="translate(370,130)">
+          <ellipse cx="50" cy="80" rx="70" ry="70" fill="url(#vaultGlow)" opacity={simulated ? 1 : 0.35}
+            style={{ transition: "opacity 600ms" }} />
+          <g style={{ animation: simulated ? "bpFloat 4s ease-in-out infinite" : "none" }}>
+            <rect x="10" y="20" width="80" height="100" rx="12" fill="#0F1620" stroke="#00C27C" strokeOpacity={simulated ? 0.7 : 0.25} strokeWidth="2" />
+            <circle cx="50" cy="70" r="22" fill="none" stroke="#00C27C" strokeOpacity={simulated ? 0.9 : 0.3} strokeWidth="3" />
+            <circle cx="50" cy="70" r="6" fill="#00C27C" opacity={simulated ? 1 : 0.4} />
+            <rect x="46" y="70" width="8" height="32" fill="#00C27C" opacity={simulated ? 0.9 : 0.3} />
+            <text x="50" y="20" textAnchor="middle" fontSize="9" fill="#00C27C" fontWeight="700" letterSpacing="2">VAULT</text>
+          </g>
+          {/* particle burst */}
+          {simulated && [...Array(10)].map((_, i) => (
+            <circle key={i} cx="50" cy="80" r="3" fill="#00C27C"
+              style={{
+                animation: `bpParticle 900ms ${i * 40}ms ease-out forwards`,
+                transform: `rotate(${i * 36}deg)`,
+                transformOrigin: "50px 80px",
+              }}
+            />
+          ))}
+        </g>
+      </svg>
+
+      <div className="relative mt-4 flex items-center justify-between text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5"><DollarSign className="h-3.5 w-3.5" /> Invoices</span>
+        <span className={simulated ? "text-[#00C27C]" : "text-[#FF5C5C]"}>
+          {simulated ? "→ Sealed pipeline →" : "→ Cash leaking out →"}
+        </span>
+        <span className="inline-flex items-center gap-1.5"><Vault className="h-3.5 w-3.5" /> Recovered</span>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Results ---------------- */
+
+function Results({
+  r,
+  email,
+  setEmail,
+  onSubmit,
+}: {
+  r: { recovered: number; monthlyLeak: number; hours: number; onTimeBefore: number; onTimeAfter: number; roi: number; breakEven: number; insight: string };
+  email: string;
+  setEmail: (v: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+}) {
+  const ringR = 44;
+  const C = 2 * Math.PI * ringR;
+  const dash = (r.onTimeAfter / 100) * C;
+
+  return (
+    <div className="fade-up space-y-6">
+      <div className="relative overflow-hidden rounded-3xl border border-[#00C27C]/30 bg-gradient-to-br from-[#0F1117] to-[#0A1A14] p-8 shadow-[0_30px_80px_-30px_rgba(0,194,124,0.4)]">
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#00C27C]/10 blur-3xl" />
+        <div className="relative">
+          <p className="text-eyebrow text-[#00C27C]">Recovered in 12 months</p>
+          <p className="mt-3 text-[clamp(2.75rem,8vw,5rem)] font-extrabold leading-none tracking-tight">
+            <AnimatedCounter value={r.recovered} prefix="$" duration={1800} />
+          </p>
+          <p className="mt-3 max-w-md text-sm text-muted-foreground">{r.insight}</p>
+        </div>
+      </div>
+
+      {/* Before/After */}
+      <div className="rounded-2xl border border-border bg-card p-6">
+        <p className="text-eyebrow">Monthly cash recovered</p>
+        <div className="mt-5 space-y-4">
+          <BarRow label="Before" value={Math.round(r.monthlyLeak * 0.22)} max={r.monthlyLeak} color="#FF5C5C" />
+          <BarRow label="After" value={r.monthlyLeak} max={r.monthlyLeak} color="#00C27C" highlight />
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        {/* Hours saved */}
+        <div className="rounded-2xl border border-border bg-card p-5">
+          <Clock className="h-5 w-5 text-[#378ADD] [animation:spin_8s_linear_infinite]" />
+          <p className="mt-3 text-2xl font-bold">
+            <AnimatedCounter value={r.hours} duration={1400} suffix=" hrs" />
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">Saved every month chasing</p>
+        </div>
+
+        {/* On-time ring */}
+        <div className="rounded-2xl border border-border bg-card p-5">
+          <div className="flex items-center gap-3">
+            <svg width="60" height="60" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r={ringR} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
+              <circle
+                cx="50"
+                cy="50"
+                r={ringR}
+                fill="none"
+                stroke="#00C27C"
+                strokeWidth="8"
+                strokeLinecap="round"
+                strokeDasharray={`${dash} ${C}`}
+                transform="rotate(-90 50 50)"
+                style={{ transition: "stroke-dasharray 1400ms ease-out" }}
+              />
+              <text x="50" y="55" textAnchor="middle" fontSize="20" fontWeight="800" fill="currentColor">
+                {r.onTimeAfter}%
+              </text>
+            </svg>
+            <div>
+              <p className="text-xs text-muted-foreground">On-time rate</p>
+              <p className="text-sm font-semibold">
+                {r.onTimeBefore}% <span className="text-muted-foreground">→</span>{" "}
+                <span className="text-[#00C27C]">{r.onTimeAfter}%</span>
               </p>
             </div>
-          );
-        })}
+          </div>
+        </div>
 
-        <AnimatePresence>
-          {tokens.map((tok) => {
-            const x = stageX[tok.stage];
-            const y = 50 + (tok.lane - 1) * 14;
-            const cleared = tok.status === "cleared";
-            const stalled = tok.status === "stalled";
-            return (
-              <motion.div
-                key={tok.id}
-                initial={{ opacity: 0, scale: 0.4, left: `${stageX[0]}%`, top: `${y}%` }}
-                animate={{
-                  opacity: cleared ? 0 : 1,
-                  left: `${x}%`,
-                  top: `${y}%`,
-                  scale: cleared ? 1.6 : stalled ? 0.92 : 1,
-                  rotate: stalled ? [-3, 3, -3] : 0,
-                }}
-                exit={{ opacity: 0, scale: 0.3 }}
-                transition={{
-                  left: { type: "spring", stiffness: 240, damping: 18 },
-                  top: { type: "spring", stiffness: 240, damping: 18 },
-                  scale: { duration: 0.4 },
-                  rotate: { duration: 0.6, repeat: stalled ? Infinity : 0 },
-                }}
-                className={`absolute z-10 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-2 py-1 text-[10px] font-semibold tabular-nums shadow-lg ring-1 ${
-                  stalled
-                    ? "bg-rose-500/90 text-white ring-rose-200/40"
-                    : "bg-white/95 text-[oklch(0.18_0.04_265)] ring-white/40 shadow-[0_4px_18px_rgba(120,160,255,0.35)]"
-                }`}
-              >
-                <span className="mr-1">{tok.client.split(" ")[0]}</span>
-                <span className="opacity-60">·</span>
-                <span className="ml-1">{fmtCompact(tok.amount)}</span>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {bursts.map((b) => (
-            <motion.div
-              key={b.id}
-              initial={{ opacity: 0, scale: 0.3, y: 0 }}
-              animate={{ opacity: [0, 1, 0], scale: [0.3, 1.4, 1], y: -28 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-              className="pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/95 px-2.5 py-1 text-[11px] font-bold text-emerald-950 shadow-[0_0_20px_rgba(80,255,180,0.7)]"
-              style={{ left: `${b.x}%`, top: `${b.y}%` }}
-            >
-              +{fmtCompact(b.amount)}
-            </motion.div>
-          ))}
-        </AnimatePresence>
-
-        {hud.combo >= 3 && (
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="absolute right-3 top-2 rounded-full border border-amber-300/40 bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-amber-200 shadow-[0_0_18px_rgba(255,200,80,0.35)]"
-          >
-            🔥 x{hud.combo} streak
-          </motion.div>
-        )}
+        {/* ROI */}
+        <div className="rounded-2xl border border-[#00C27C]/30 bg-[#00C27C]/[0.05] p-5">
+          <TrendingUp className="h-5 w-5 text-[#00C27C]" />
+          <p className="mt-3 text-2xl font-bold text-[#00C27C]">
+            <AnimatedCounter value={r.roi} duration={1400} suffix="×" />
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">ROI on Pro · break-even in {r.breakEven} days</p>
+        </div>
       </div>
 
-      <p className="mt-2 text-[10px] text-white/40">
-        Each token is an invoice hopping milestones. Higher Recovery score = more tokens reach <span className="text-emerald-200/80">Paid</span>.
-      </p>
+      {/* Insight callout */}
+      <div className="flex items-start gap-3 rounded-2xl border border-border bg-card p-5">
+        <LineChart className="mt-0.5 h-5 w-5 shrink-0 text-[#00C27C]" />
+        <p className="text-sm">
+          <span className="font-semibold">Translation:</span> at this scale, BoostProfits Pro pays for itself in under
+          two weeks — every month after is pure margin.
+        </p>
+      </div>
+
+      {/* Email capture */}
+      <form onSubmit={onSubmit} className="rounded-2xl border border-border bg-card p-5">
+        <p className="text-sm font-semibold">Email me a personalized PDF report</p>
+        <p className="mt-1 text-xs text-muted-foreground">Detailed breakdown, milestone playbook, and recovery roadmap.</p>
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <div className="relative flex-1">
+            <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="email"
+              placeholder="you@agency.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-11 pl-9"
+            />
+          </div>
+          <Button
+            type="submit"
+            className="h-11 bg-[#00C27C] text-[#08090D] font-bold hover:bg-[#00A869] transition-all"
+          >
+            Send my report
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }
 
-function HudStat({ label, value, tone }: { label: string; value: string; tone: "paid" | "stuck" | "fire" | "muted" }) {
-  const colors = {
-    paid: "text-emerald-200 border-emerald-300/20 bg-emerald-400/5",
-    stuck: "text-rose-200 border-rose-300/20 bg-rose-400/5",
-    fire: "text-amber-200 border-amber-300/30 bg-amber-400/10 shadow-[0_0_18px_rgba(255,200,80,0.25)]",
-    muted: "text-white/70 border-white/10 bg-white/[0.03]",
-  }[tone];
+function BarRow({ label, value, max, color, highlight }: { label: string; value: number; max: number; color: string; highlight?: boolean }) {
+  const pct = Math.max(4, Math.min(100, (value / max) * 100));
   return (
-    <div className={`flex items-center justify-between rounded-lg border px-3 py-1.5 ${colors}`}>
-      <span className="text-[9px] font-bold uppercase tracking-[0.18em] opacity-80">{label}</span>
-      <span className="font-serif text-[15px] font-semibold tabular-nums">{value}</span>
+    <div>
+      <div className="flex items-baseline justify-between text-sm">
+        <span className="text-muted-foreground">{label}</span>
+        <span className={`font-bold tabular-nums ${highlight ? "text-[#00C27C]" : ""}`}>
+          <AnimatedCounter value={value} prefix="$" duration={1400} />
+          <span className="text-xs font-normal text-muted-foreground"> /mo</span>
+        </span>
+      </div>
+      <div className="mt-2 h-3 overflow-hidden rounded-full bg-white/5">
+        <div
+          className="h-full rounded-full"
+          style={{
+            width: `${pct}%`,
+            background: `linear-gradient(90deg, ${color}, ${color}cc)`,
+            transition: "width 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
+            boxShadow: highlight ? `0 0 24px ${color}55` : undefined,
+          }}
+        />
+      </div>
     </div>
   );
 }
-
