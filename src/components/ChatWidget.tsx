@@ -5,16 +5,16 @@ import { MessageSquare, X, Send, Sparkles, Loader2 } from "lucide-react";
 type Msg = { role: "user" | "assistant"; content: string };
 
 const SUGGESTIONS = [
-  "What does Fyne do?",
-  "How does milestone billing work?",
-  "Show me pricing",
-  "Is my data secure?",
+  "Where is my agency leaking revenue?",
+  "How does milestone billing actually work?",
+  "Which plan fits a 12-person studio?",
+  "Can you run a free revenue audit?",
 ];
 
 const GREETING: Msg = {
   role: "assistant",
   content:
-    "Hey 👋 I'm the Fyne assistant. Ask me about features, pricing, integrations or how to get paid faster. I'll keep it short.",
+    "Hi — I'm Boost, the revenue strategist for BoostProfits. Tell me your team size or where invoices are slipping, and I'll show you exactly where the money's leaking.",
 };
 
 export function ChatWidget() {
@@ -160,13 +160,13 @@ export function ChatWidget() {
                     <Sparkles className="h-4 w-4" />
                   </span>
                   <div>
-                    <p className="text-sm font-semibold leading-tight">Fyne Assistant</p>
+                    <p className="text-sm font-semibold leading-tight">Boost · Revenue Strategist</p>
                     <p className="flex items-center gap-1.5 text-[11px] text-white/65">
                       <span className="relative flex h-1.5 w-1.5">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                         <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
                       </span>
-                      Online · Answers about Fyne
+                      Online · BoostProfits AI
                     </p>
                   </div>
                 </div>
@@ -244,7 +244,7 @@ export function ChatWidget() {
                   }}
                   rows={1}
                   maxLength={500}
-                  placeholder="Ask about Fyne…"
+                  placeholder="Ask Boost about your revenue…"
                   className="flex-1 resize-none bg-transparent text-[13.5px] outline-none placeholder:text-muted-foreground/70"
                   disabled={loading}
                 />
@@ -258,7 +258,7 @@ export function ChatWidget() {
                 </button>
               </div>
               <p className="mt-1.5 px-1 text-[10px] text-muted-foreground">
-                AI assistant · Only answers Fyne-related questions · Don't share sensitive info
+                Boost AI · BoostProfits-only answers · Never share passwords or card numbers
               </p>
             </form>
           </motion.div>
