@@ -3,6 +3,8 @@ import { useRouterState } from "@tanstack/react-router";
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
 import { ChatWidget } from "./ChatWidget";
+import { ScrollProgress } from "./ScrollProgress";
+import { MobileStickyCTA } from "./MobileStickyCTA";
 import { trackPageView } from "@/lib/tracking";
 
 export function MarketingLayout({ children }: { children: React.ReactNode }) {
